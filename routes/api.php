@@ -1,0 +1,77 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Http\Controllers\AccessTokenController;
+use Laravel\Passport\Http\Controllers\TransientTokenController;
+use Laravel\Passport\Http\Controllers\AuthorizationController;
+use Laravel\Passport\Http\Controllers\ClientController;
+use Laravel\Passport\Http\Controllers\PersonalAccessTokenController;
+use Laravel\Passport\Http\Controllers\ScopeController;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\MasterController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\StoriesController;
+use App\Http\Controllers\Api\PostsController;
+use App\Http\Controllers\Api\EventsController;
+use App\Http\Controllers\Api\VillagesController;
+use App\Http\Controllers\Api\CommitteesController;
+use App\Http\Controllers\Api\PagesController;
+use App\Http\Controllers\Api\PublicDocumentsController;
+use App\Http\Controllers\Api\GalleryController;
+use App\Http\Controllers\Api\FamilyMemberController;
+use App\Http\Controllers\Api\DonationsController;
+
+Route::prefix('oauth')->group(function () {
+    Route::post('/token', [AccessTokenController::class, 'issueToken'])->name('passport.token');
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/tokens', [PersonalAccessTokenController::class, 'forUser']);
+        Route::delete('/tokens/{token_id}', [PersonalAccessTokenController::class, 'destroy']);
+    });
+});
+
+Route::post('mobile-number-check', [LoginController::class, 'mobileNumberCheck'])->name('mobileNumberCheck');
+Route::post('login', [LoginController::class, 'index'])->name('login');
+Route::post('register-user', [LoginController::class, 'registerUser'])->name('registerUser');
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('master', [MasterController::class, 'index'])->name('master');
+    Route::get('user-profile', [MasterController::class, 'userProfile'])->name('user-profile');
+
+    Route::get('notification-count', [NotificationController::class, 'notificationCount'])->name('notification-count');
+    Route::get('notifications', [NotificationController::class, 'notifications'])->name('notifications');
+    Route::post('read-notifications', [NotificationController::class, 'readNotifications'])->name('read-notifications');
+
+    Route::get('stories', [StoriesController::class, 'stories'])->name('stories');
+    Route::post('add-story', [StoriesController::class, 'addStory'])->name('add-story');
+
+    Route::get('posts', [PostsController::class, 'posts'])->name('posts');
+    Route::post('add-post', [PostsController::class, 'addPost'])->name('add-post');
+    Route::post('like-post', [PostsController::class, 'likePost'])->name('like-post');
+
+    Route::get('events', [EventsController::class, 'events'])->name('events');
+    Route::get('event-detail/{id}', [EventsController::class, 'eventDetail'])->name('event-detail');
+    Route::post('event-register', [EventsController::class, 'eventRegister'])->name('event-register');
+
+    Route::get('villages', [VillagesController::class, 'villages'])->name('villages');
+    Route::get('village-detail/{id}', [VillagesController::class, 'villageDetail'])->name('village-detail');
+
+    Route::get('committees', [CommitteesController::class, 'committees'])->name('committees');
+    Route::get('committee-detail/{id}', [CommitteesController::class, 'committeeDetail'])->name('committee-detail');
+
+    Route::get('get-page/{slug}', [PagesController::class, 'getPage'])->name('get-page');
+
+    Route::get('public-documents/', [PublicDocumentsController::class, 'publicDocuments'])->name('public-documents');
+
+    Route::get('gallery-folders/', [GalleryController::class, 'galleryFolders'])->name('gallery-folders');
+    Route::get('gallery-folder-detail/{id}', [GalleryController::class, 'galleryFolderDetail'])->name('gallery-folder-detail');
+
+    Route::get('family-members/', [FamilyMemberController::class, 'familyMembers'])->name('family-members');
+    Route::post('add-family-member/', [FamilyMemberController::class, 'addFamilyMember'])->name('add-family-member');
+    Route::post('accept-reject-family-member/', [FamilyMemberController::class, 'acceptRejectFamilyMember'])->name('accept-reject-family-member');
+
+    Route::get('donations', [DonationsController::class, 'donations'])->name('donations');
+    Route::get('donation-detail/{id}', [DonationsController::class, 'donationDetail'])->name('donation-detail');
+
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+});

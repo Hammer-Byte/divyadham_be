@@ -1,0 +1,143 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Session;
+use App\Models\User;
+use Hash;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use App\Models\Post;
+use App\Models\PostLike;
+
+class PostsController extends Controller
+{
+    public function posts(Request $request)
+    {
+        try{
+            $user = auth()->user();
+
+            $data['posts'] = Post::with('getUser')->with('getPostLikes')->with('getPostComments')->with('getDonation')->orderBy('created_at', 'DESC')->paginate(20);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Api called successfully',
+                'data' => $data,
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function addPost(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:text,link,media',
+            'content' => 'required_if:type,text',
+            'link_title' => 'required_if:type,link',
+            'link_description' => 'required_if:type,link',
+            'link_url' => 'nullable|required_if:type,link|url',
+            'link_image_url' => 'nullable|required_if:type,link|url',
+            'media_upload_type' => 'required_if:type,media|in:file_upload,url',
+            'media_type_file.*' => 'required_if:media_upload_type,file_upload|mimes:jpg,jpeg,png|max:20480',
+            'media_type_url' => 'nullable|required_if:media_upload_type,url|url',
+            'media_type' => 'required_if:type,media|in:image,video',
+        ]);
+
+        try{
+            $user = auth()->user();
+
+            $data = $request->all(); 
+            $data['user_id'] = $user->id;
+            $data['status'] = 1;
+
+            if ($request->media_upload_type == 'file_upload') {
+                $data['media_url'] = [];
+
+                $files = $request->file('media_type_file');
+
+                if ($files) {
+                    if (!is_array($files)) {
+                        $files = [$files];
+                    }
+
+                    foreach ($files as $file) {
+                        $url = storeFile($file, 'post_media');
+                        $data['media_url'][] = $url;
+                    }
+                }
+
+                $data['media_url'] = json_encode($data['media_url']);
+            }else if ($request->media_upload_type == 'url') {
+                $data['media_url'] = $request->media_type_url;
+            }
+
+            Post::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Api called successfully',
+                'data' => (object) [],
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function likePost(Request $request)
+    {
+        $request->validate([
+            'post_id' => 'required',
+            'user_id' => 'required',
+        ]);
+
+        try{
+            $user = auth()->user();
+
+            $insert_arr = [
+                'post_id' => $request->post_id,
+                'user_id' => $request->user_id,
+            ];
+
+            PostLike::updateOrCreate($insert_arr);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Api called successfully',
+                'data' => (object) [],
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+}

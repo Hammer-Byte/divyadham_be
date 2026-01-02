@@ -1,0 +1,212 @@
+{
+  "menu": [
+    {
+        "name": "Dashboard",
+        "icon": "menu-icon tf-icons fa fa-dashboard",
+        "slug": "manage.dashboard",
+        "url": "manage/dashboard",
+        "accepted_routes":[]
+    },
+    {
+        "name": "Admins",
+        "icon": "menu-icon tf-icons fa fa-user",
+        "slug": "manage.admins",
+        "url": "manage/admins",
+        "accepted_routes":[
+            "manage.admins",
+            "manage.adminList",
+            "manage.adminCreate",
+            "manage.adminAdd",
+            "manage.adminEdit",
+            "manage.adminUpdate"
+        ]
+    },
+    {
+        "name": "Users",
+        "icon": "menu-icon tf-icons fa fa-users",
+        "slug": "manage.users",
+        "url": "manage/users",
+        "accepted_routes":[
+            "manage.users",
+            "manage.userList",
+            "manage.userView"
+        ]
+    },
+    {
+        "name": "Committees",
+        "icon": "menu-icon tf-icons fa fa-users",
+        "slug": "manage.committees",
+        "url": "manage/committees",
+        "accepted_routes":[
+            "manage.committees",
+            "manage.committeeList",
+            "manage.committeeCreate",
+            "manage.committeeAdd",
+            "manage.committeeEdit",
+            "manage.committeeUpdate",
+            "manage.committeeView",
+            "manage.committeeMembersList",
+            "manage.committeeMemberCreate",
+            "manage.committeeMemberAdd",
+            "manage.committeeMemberEdit",
+            "manage.committeeMemberUpdate",
+            "manage.committeeMeetingsList",
+            "manage.committeeMeetingCreate",
+            "manage.committeeMeetingAdd",
+            "manage.committeeMeetingEdit",
+            "manage.committeeMeetingUpdate",
+            "manage.committeeFinanceList",
+            "manage.committeeFinanceCreate",
+            "manage.committeeFinanceAdd",
+            "manage.committeeFinanceEdit",
+            "manage.committeeFinanceUpdate"
+        ]
+    },
+    {
+        "name": "Villages",
+        "icon": "menu-icon tf-icons fa fa-home",
+        "slug": "manage.villages",
+        "url": "manage/villages",
+        "accepted_routes":[
+            "manage.villages",
+            "manage.villageList",
+            "manage.villageCreate",
+            "manage.villageAdd",
+            "manage.villageEdit",
+            "manage.villageUpdate",
+            "manage.villageView",
+            "manage.villageMembersList",
+            "manage.villageMemberCreate",
+            "manage.villageMemberAdd",
+            "manage.villageMemberEdit",
+            "manage.villageMemberUpdate",
+            "manage.villageMediaList",
+            "manage.villageMediaCreate",
+            "manage.villageMediaAdd",
+            "manage.villageMediaEdit",
+            "manage.villageMediaUpdate"
+        ]
+    },
+    {
+        "name": "Donation Campaigns",
+        "icon": "menu-icon tf-icons fa fa-inr",
+        "slug": "manage.donationCampaigns",
+        "url": "manage/donationCampaigns",
+        "accepted_routes":[
+            "manage.donationCampaigns",
+            "manage.donationCampaignList",
+            "manage.donationCampaignCreate",
+            "manage.donationCampaignAdd",
+            "manage.donationCampaignEdit",
+            "manage.donationCampaignUpdate",
+            "manage.donationCampaignView",
+            "manage.donationMediaList",
+            "manage.donationMediaCreate",
+            "manage.donationMediaAdd",
+            "manage.donationMediaEdit",
+            "manage.donationMediaUpdate",
+            "manage.donationUpdatesList",
+            "manage.donationUpdateCreate",
+            "manage.donationUpdateAdd",
+            "manage.donationUpdateEdit",
+            "manage.donationUpdateUpdate"
+        ]
+    },
+    {
+        "name": "Events",
+        "icon": "menu-icon tf-icons fa-regular fa-calendar",
+        "slug": "manage.events",
+        "url": "manage/events",
+        "accepted_routes":[
+            "manage.events",
+            "manage.eventList",
+            "manage.eventCreate",
+            "manage.eventAdd",
+            "manage.eventEdit",
+            "manage.eventUpdate",
+            "manage.eventView",
+            "manage.eventMediaList",
+            "manage.eventMediaCreate",
+            "manage.eventMediaAdd",
+            "manage.eventMediaEdit",
+            "manage.eventMediaUpdate"
+        ]
+    },
+    {
+        "name": "Posts",
+        "icon": "menu-icon tf-icons fa fa-file-image",
+        "slug": "manage.posts",
+        "url": "manage/posts",
+        "accepted_routes":[
+            "manage.posts",
+            "manage.postList",
+            "manage.postCreate",
+            "manage.postAdd",
+            "manage.postEdit",
+            "manage.postUpdate"
+        ]
+    },
+    {
+        "name": "Organizers",
+        "icon": "menu-icon tf-icons fa fa-users",
+        "slug": "manage.organizers",
+        "url": "manage/organizers",
+        "accepted_routes":[
+            "manage.organizers",
+            "manage.organizerList",
+            "manage.organizerCreate",
+            "manage.organizerAdd",
+            "manage.organizerEdit",
+            "manage.organizerUpdate"
+        ]
+    },
+    {
+        "name": "Public Documents",
+        "icon": "menu-icon tf-icons fa fa-file-text",
+        "slug": "manage.publicDocuments",
+        "url": "manage/publicDocuments",
+        "accepted_routes":[
+            "manage.publicDocuments",
+            "manage.publicDocumentList",
+            "manage.publicDocumentCreate",
+            "manage.publicDocumentAdd",
+            "manage.publicDocumentEdit",
+            "manage.publicDocumentUpdate"
+        ]
+    },
+    {
+        "name": "Gallery",
+        "icon": "menu-icon tf-icons fa fa-film",
+        "slug": "manage.gallery",
+        "url": "manage/gallery",
+        "accepted_routes":[
+            "manage.gallery",
+            "manage.galleryList",
+            "manage.galleryCreate",
+            "manage.galleryAdd",
+            "manage.galleryEdit",
+            "manage.galleryUpdate",
+            "manage.galleryView",
+            "manage.galleryMediaList",
+            "manage.galleryMediaCreate",
+            "manage.galleryMediaAdd",
+            "manage.galleryMediaEdit",
+            "manage.galleryMediaUpdate"
+        ]
+    },
+    {
+        "name": "Pages",
+        "icon": "menu-icon tf-icons fa fa-book",
+        "slug": "manage.pages",
+        "url": "manage/pages",
+        "accepted_routes":[
+            "manage.pages",
+            "manage.pageList",
+            "manage.pageCreate",
+            "manage.pageAdd",
+            "manage.pageEdit",
+            "manage.pageUpdate"
+        ]
+    }
+  ]
+}

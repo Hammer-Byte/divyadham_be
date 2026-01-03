@@ -13,7 +13,7 @@ jobs:
       DEPLOYMENT_DIRECTORY: "/var/www/sites/dev-divyadham.hammerbyte.co.in/"
       REPO: "divyadham_api"
       BRANCH: ${{ github.ref_name }}
-      # ENTRY: "app.js"
+      PORT: 8000
 
     steps:
       - name: Preparing SSH
@@ -24,13 +24,10 @@ jobs:
           sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USERNAME }}@${{ secrets.HOSTING_SERVER }}" << 'EOF'
             set -e
             cd "${{ env.DEPLOYMENT_DIRECTORY }}"
+            echo "Cleaning up port ${{env.PORT}}..."
+            fuser -k ${{ env.PORT }}/tcp || true
             if [ -d "${{ env.REPO }}" ]; then
               cd "${{ env.REPO }}"
-              pid=$(cat process.id)
-              if ps -p $pid > /dev/null; then
-                echo "Terminating ${{ env.REPO }} - pid $pid"
-                kill -9 $pid
-              fi
               echo "Fetching Changes..."
               git stash
               git fetch origin "${{env.BRANCH}}"
@@ -51,9 +48,7 @@ jobs:
             npx mix --production
             echo "Starting app..."
             nohup php artisan serve > /dev/null 2>&1 &
-            new_pid=$!
-            echo "Starting ${{ env.REPO }} - pid $new_pid"
-            echo $new_pid > process.id
+            echo "Starting ${{ env.REPO }}
             echo "✅ Deployed & Disconnecting SSH"
             exit 1
           EOF

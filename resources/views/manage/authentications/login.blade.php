@@ -21,7 +21,7 @@
             </a>
           </div>
           <!-- /Logo -->
-          <h4 class="mb-2">Welcome to {{config('app.name')}}! 👋</h4>
+          <h4 class="mb-2">Welcome to {{config('app.name')}}! </h4>
 
           <form id="frm_login" class="mb-3" action="{{ route('manage.login') }}" method="post">
             @include('manage.include.notify')

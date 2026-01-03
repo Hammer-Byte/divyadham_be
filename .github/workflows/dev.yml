@@ -43,10 +43,15 @@ jobs:
             fi
 
             echo "Installing dependencies..."
+            composer install --optimize-autoloader
+            php artisan key:generate
+            php artisan storage:link
+            php artisan migrate
+            php artisan db:seed
             npm install
-
+            npx mix --production
             echo "Starting app..."
-            nohup php artisan serve.git > /dev/null 2>&1 &
+            nohup php artisan serve > /dev/null 2>&1 &
             new_pid=$!
             echo "Starting ${{ env.REPO }} - pid $new_pid"
             echo $new_pid > process.id

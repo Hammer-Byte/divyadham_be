@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DEPLOYMENT_DIRECTORY: "/var/www/sites/dev-divyadham.sahasinstitute.com/"
+      DEPLOYMENT_DIRECTORY: "/var/www/sites/dev-divyadham.hammerbyte.co.in/"
       REPO: "divyadham_api"
       BRANCH: ${{ github.ref_name }}
       # ENTRY: "app.js"

@@ -46,7 +46,7 @@ jobs:
             npm install
 
             echo "Starting app..."
-            nohup php artisan serve > /dev/null 2>&1 &
+            nohup php artisan serve.git > /dev/null 2>&1 &
             new_pid=$!
             echo "Starting ${{ env.REPO }} - pid $new_pid"
             echo $new_pid > process.id

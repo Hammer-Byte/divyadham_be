@@ -170,7 +170,7 @@ class PostsController extends Controller
         }
     }
 
-    public function addComment(Request $request)
+    public function addPostComment(Request $request)
     {
         $request->validate([
             'post_id' => 'required|exists:posts,id',
@@ -186,10 +186,12 @@ class PostsController extends Controller
                 'content' => $request->content,
             ]);
 
+            $comment->load('getUser');
+
             return response()->json([
                 'success' => true,
                 'message' => 'Comment added successfully',
-                'data' => $comment->load('getUser'),
+                'data' => $comment,
                 'error' => (object) [],
                 ], 200);
         } catch (\Exception $e) {

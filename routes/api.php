@@ -48,7 +48,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('posts', [PostsController::class, 'posts'])->name('posts');
     Route::post('add-post', [PostsController::class, 'addPost'])->name('add-post');
     Route::post('like-post', [PostsController::class, 'likePost'])->name('like-post');
-    Route::post('add-comment', [PostsController::class, 'addComment'])->name('add-comment');
+    Route::post('add-comment', [PostsController::class, 'addPostComment'])->name('add-comment');
 
     Route::get('events', [EventsController::class, 'events'])->name('events');
     Route::get('event-detail/{id}', [EventsController::class, 'eventDetail'])->name('event-detail');

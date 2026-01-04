@@ -44,7 +44,6 @@ jobs:
             php artisan config:clear
             php artisan key:generate
             php artisan storage:link
-            php artisan passport:client --personal
             
             npm install
             npx mix --production

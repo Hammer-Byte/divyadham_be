@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\Post;
 use App\Models\PostLike;
+use App\Models\PostComment;
 
 class PostsController extends Controller
 {
@@ -155,6 +156,40 @@ class PostsController extends Controller
                 'success' => true,
                 'message' => 'Api called successfully',
                 'data' => (object) [],
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function addComment(Request $request)
+    {
+        $request->validate([
+            'post_id' => 'required|exists:posts,id',
+            'content' => 'required|string',
+        ]);
+
+        try{
+            $user = auth()->user();
+
+            $comment = PostComment::create([
+                'post_id' => $request->post_id,
+                'user_id' => $user->id,
+                'content' => $request->content,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment added successfully',
+                'data' => $comment->load('getUser'),
                 'error' => (object) [],
                 ], 200);
         } catch (\Exception $e) {

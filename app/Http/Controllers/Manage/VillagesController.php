@@ -26,10 +26,10 @@ class VillagesController extends Controller
     return DataTables::of($query)
         ->editColumn('location', function ($q) {
             return $locationData = [
-              'state' => $q->getState->name,
-              'district' => $q->getDistrict->name,
-              'lat' => $q->latitude,
-              'long' => $q->longitude,
+              'state' => $q->getState ? $q->getState->name : '-',
+              'district' => $q->getDistrict ? $q->getDistrict->name : '-',
+              'lat' => $q->latitude ?? '-',
+              'long' => $q->longitude ?? '-',
             ];
         })
         ->filterColumn('location', function ($query, $keyword) {

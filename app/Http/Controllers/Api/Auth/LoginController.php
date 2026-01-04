@@ -25,10 +25,9 @@ class LoginController extends Controller
         ]);
 
         try{
-            $user = User::withoutSystemAdmin()
+            $user = User::query()
                 ->where('phone_number',$request->phone_number)
                 ->where('status', 1)
-                ->orderBy('id','DESC')
                 ->first();
 
             if ($user) {

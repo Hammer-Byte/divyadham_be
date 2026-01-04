@@ -18,7 +18,7 @@ class UsersController extends Controller
   }
 
   public function userList() {
-    $query = User::withoutSystemAdmin();
+    $query = User::query();
 
     return DataTables::of($query)
         ->editColumn('name', function ($q) {
@@ -26,6 +26,9 @@ class UsersController extends Controller
         })
         ->filterColumn('name', function ($query, $keyword) {
             $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$keyword}%"]);
+        })
+        ->orderColumn('name', function ($query, $order) {
+            $query->orderBy('first_name', $order)->orderBy('last_name', $order);
         })
         ->editColumn('profile_image', function ($q) {
             return $q->profile_image != '' ? getFileUrl($q->profile_image) : asset('admin/assets/img/avatars/admin-logo.png');

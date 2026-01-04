@@ -55,7 +55,7 @@
                 { "data": "name", "className": "", "searchable": true, "orderable": true},
                 { "data": "description", "className": "text-wrap text-left", "searchable": true, "orderable": true},
                 { "data": "population",  "className": "", "searchable": true, "orderable": true},
-                { "data": "location", "className": "", "searchable": true, "orderable": true,
+                { "data": "location", "className": "", "searchable": true, "orderable": false,
                     "render": function (data, type, row) {
                         return `<div>
                                     <span>State: ${data.state}</span><br/>

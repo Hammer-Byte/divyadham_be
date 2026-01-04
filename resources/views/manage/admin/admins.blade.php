@@ -48,7 +48,14 @@
         $('#adminsTable').DataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{{ route('manage.adminList') }}",
+            "ajax": {
+                "url": "{{ route('manage.adminList') }}",
+                "error": function(xhr, error, thrown) {
+                    console.error('DataTables Ajax Error:', error);
+                    console.error('Response:', xhr.responseText);
+                    alert('Error loading data. Please check the console for details.');
+                }
+            },
             "columns": [
                 { "data": null, "className": "", "orderable": false, "searchable": false,"render": function (data, type, row, meta) {return meta.row + 1;}
                 },
@@ -76,7 +83,7 @@
                             }
                 }
             ],
-            "order": [[1, "asc"]]
+            "order": [[2, "asc"]]
         });
     });
 </script>

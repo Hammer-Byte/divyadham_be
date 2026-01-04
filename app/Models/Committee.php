@@ -19,6 +19,9 @@ class Committee extends Model
         'name',
         'description',
         'formed_date',
+        'current_balance',
+        'total_income',
+        'total_expense',
         'status',
     ];
 

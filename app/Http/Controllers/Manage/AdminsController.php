@@ -19,8 +19,7 @@ class AdminsController extends Controller
   }
 
   public function adminList() {
-    $user = Auth::guard('admin')->user();
-    $query = Admin::where('id','!=', $user->id);
+    $query = Admin::query();
 
     return DataTables::of($query)
         ->editColumn('profile_image', function ($q) {

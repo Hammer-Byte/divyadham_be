@@ -30,6 +30,7 @@ class PostLikesTableSeeder extends Seeder
                 PostLike::create([
                     'post_id' => $post->id,
                     'user_id' => $user->id,
+                    'type' => 'like',
                 ]);
             }
         }

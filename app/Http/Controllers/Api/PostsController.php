@@ -111,17 +111,45 @@ class PostsController extends Controller
         $request->validate([
             'post_id' => 'required',
             'user_id' => 'required',
+            'type' => 'nullable|in:like,dislike',
         ]);
 
         try{
             $user = auth()->user();
+            
+            // Default to 'like' if type is not provided (for backward compatibility)
+            $reactionType = $request->type ?? 'like';
 
-            $insert_arr = [
-                'post_id' => $request->post_id,
-                'user_id' => $request->user_id,
-            ];
+            // Check if a like/dislike exists (including soft deleted)
+            $postLike = PostLike::withTrashed()
+                ->where('post_id', $request->post_id)
+                ->where('user_id', $request->user_id)
+                ->first();
 
-            PostLike::updateOrCreate($insert_arr);
+            if ($postLike) {
+                if ($postLike->trashed()) {
+                    // Restore and update type to requested reaction
+                    $postLike->restore();
+                    $postLike->type = $reactionType;
+                    $postLike->save();
+                } else {
+                    if ($postLike->type === $reactionType) {
+                        // Toggle off - soft delete (user clicked same reaction again)
+                        $postLike->delete();
+                    } else {
+                        // Change from one reaction to another (like to dislike or vice versa)
+                        $postLike->type = $reactionType;
+                        $postLike->save();
+                    }
+                }
+            } else {
+                // Create new reaction
+                PostLike::create([
+                    'post_id' => $request->post_id,
+                    'user_id' => $request->user_id,
+                    'type' => $reactionType,
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

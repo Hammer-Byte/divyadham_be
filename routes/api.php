@@ -73,6 +73,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('donations', [DonationsController::class, 'donations'])->name('donations');
     Route::get('donation-detail/{id}', [DonationsController::class, 'donationDetail'])->name('donation-detail');
+    Route::get('my-contributions', [DonationsController::class, 'myContributions'])->name('my-contributions');
 
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

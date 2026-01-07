@@ -21,4 +21,14 @@ class Donations extends Model
         'message',
         'receipt_url',
     ];
+
+    public function donationCampaign()
+    {
+        return $this->belongsTo(DonationCampaign::class, 'dc_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

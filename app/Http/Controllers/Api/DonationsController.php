@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\DonationCampaign;
 use App\Models\Organizer;
+use App\Models\Donations;
+use Carbon\Carbon;
 
 class DonationsController extends Controller
 {
@@ -68,6 +70,82 @@ class DonationsController extends Controller
                 'data' => $data,
                 'error' => (object) [],
                 ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function myContributions(Request $request)
+    {
+        try {
+            $user = auth()->user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated.',
+                    'data' => (object) [],
+                    'error' => 'Unauthorized',
+                ], 401);
+            }
+
+            // Get all donations for the logged-in user with campaign details
+            $contributions = Donations::where('user_id', $user->id)
+                ->with('donationCampaign')
+                ->orderBy('donation_date', 'desc');
+
+            // Apply pagination if needed
+            $perPage = $request->get('per_page', 20);
+            $contributions = $contributions->paginate($perPage);
+
+            // Format the response data
+            $formattedContributions = $contributions->map(function ($donation) {
+                $campaign = $donation->donationCampaign;
+                
+                return [
+                    'id' => $donation->id,
+                    'amount' => $donation->amount,
+                    'currency' => $donation->currency,
+                    'donation_date' => $donation->donation_date ? Carbon::parse($donation->donation_date)->format('Y-m-d H:i:s') : null,
+                    'message' => $donation->message,
+                    'receipt_url' => $donation->receipt_url,
+                    'campaign' => $campaign ? [
+                        'id' => $campaign->id,
+                        'title' => $campaign->title,
+                        'description' => $campaign->description,
+                        'donation_type' => $campaign->donation_type,
+                        'goal_amount' => $campaign->goal_amount,
+                        'raise_amount' => $campaign->raise_amount,
+                        'start_date' => $campaign->start_date ? Carbon::parse($campaign->start_date)->format('Y-m-d') : null,
+                        'end_date' => $campaign->end_date ? Carbon::parse($campaign->end_date)->format('Y-m-d') : null,
+                        'banner_image_full_url' => $campaign->banner_image_full_url,
+                        'status' => $campaign->status,
+                    ] : null,
+                ];
+            });
+
+            $data = [
+                'contributions' => $formattedContributions,
+                'total_contributions' => $contributions->total(),
+                'current_page' => $contributions->currentPage(),
+                'per_page' => $contributions->perPage(),
+                'last_page' => $contributions->lastPage(),
+                'total_amount' => Donations::where('user_id', $user->id)->sum('amount'),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'My contributions retrieved successfully',
+                'data' => $data,
+                'error' => (object) [],
+            ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 

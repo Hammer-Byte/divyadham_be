@@ -48,6 +48,10 @@ jobs:
             
             npm install
             npx mix --production
+
+            php artisan optimize:clear
+            php artisan view:clear
+
             echo "Starting app..."
             nohup php artisan serve > /dev/null 2>&1 &
             echo "Starting ${{ env.REPO }}

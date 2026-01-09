@@ -45,6 +45,8 @@ jobs:
             php artisan key:generate
             php artisan storage:link
             php artisan migrate:fresh
+            php artisan db:seed
+
             
             npm install --legacy-peer-deps
             npx mix --production

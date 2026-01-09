@@ -46,7 +46,7 @@ jobs:
             php artisan storage:link
             php artisan migrate:fresh
             
-            npm install
+            npm install --legacy-peer-deps
             npx mix --production
 
             php artisan optimize:clear

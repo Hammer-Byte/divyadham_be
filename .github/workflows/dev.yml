@@ -44,6 +44,7 @@ jobs:
             php artisan config:clear
             php artisan key:generate
             php artisan storage:link
+            php artisan migrate:fresh
             
             npm install
             npx mix --production

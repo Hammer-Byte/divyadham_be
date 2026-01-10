@@ -39,12 +39,17 @@ jobs:
               cd "${{ env.REPO }}"
             fi
 
+            echo "Cleaning up duplicate OAuth migrations..."
+            find database/migrations -name "2026_*_create_oauth_*.php" -type f -delete || true
+            
             echo "Installing dependencies..."
             composer install --optimize-autoloader
             php artisan config:clear
             php artisan key:generate
             php artisan storage:link
             php artisan migrate:fresh
+            php artisan passport:keys --force
+            php artisan passport:client --personal --name="Personal Access Client" || true
             php artisan db:seed
 
             

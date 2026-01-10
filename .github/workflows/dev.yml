@@ -45,7 +45,6 @@ jobs:
             php artisan key:generate
             php artisan storage:link
             php artisan migrate:fresh
-            php artisan passport:client --personal --name="Personal Access Client"
             php artisan db:seed
 
             

@@ -45,6 +45,8 @@ jobs:
             php artisan key:generate
             php artisan storage:link
             php artisan migrate:fresh
+            php artisan passport:keys --force
+            php artisan passport:client --personal --name="Personal Access Client"
             php artisan db:seed
 
             
@@ -56,7 +58,7 @@ jobs:
 
             echo "Starting app..."
             nohup php artisan serve > /dev/null 2>&1 &
-            echo "Starting ${{ env.REPO }}
+            echo "Starting ${{ env.REPO }}"
             echo "✅ Deployed & Disconnecting SSH"
-            exit 1
+            exit 0
           EOF

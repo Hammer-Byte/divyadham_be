@@ -48,37 +48,7 @@ class TwilioService
         $this->serviceSid = $sid;
     }
 
-    /**
-     * Create Verify Service
-     */
-    public function createService($friendlyName = 'OTP Verification Service')
-    {
-        try {
-            $service = $this->client->verify->v2->services->create([
-                'friendlyName' => $friendlyName
-            ]);
-            $this->serviceSid = $service->sid;
-            Log::info('Verify service created: ' . $service->sid);
-            return $service;
-        } catch (\Exception $e) {
-            Log::error('Failed to create verify service: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 
-    /**
-     * Fetch Verify Service
-     */
-    public function fetchService($sid)
-    {
-        try {
-            $service = $this->client->verify->v2->services($sid)->fetch();
-            return $service;
-        } catch (\Exception $e) {
-            Log::error('Failed to fetch verify service: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 
     /**
      * Send OTP Verification

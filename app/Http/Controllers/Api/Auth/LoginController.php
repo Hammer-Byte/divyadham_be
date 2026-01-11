@@ -14,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Services\TwilioService;
 
 class LoginController extends Controller
 {
@@ -198,6 +199,243 @@ class LoginController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Send OTP Verification Code
+     */
+    public function sendOTP(Request $request)
+    {
+        $request->validate([
+            'to' => 'required|string',
+            'service_sid' => 'nullable|string',
+        ]);
+
+        try {
+            $to = $request->to;
+            $channel = 'sms'; // Hardcoded to SMS
+            $customServiceSid = $request->service_sid;
+
+            // Validate phone number format (should start with +)
+            if (!str_starts_with($to, '+')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number must be in E.164 format (e.g., +1234567890)',
+                    'data' => (object) [],
+                    'error' => 'Invalid phone number format',
+                ], 400);
+            }
+
+            $twilioService = new TwilioService();
+
+            // Check if service SID is available
+            $verifyServiceSid = $customServiceSid ?? $twilioService->getServiceSid();
+
+            if (!$verifyServiceSid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Verify service SID is required. Please create a service first.',
+                    'data' => (object) [],
+                    'error' => 'Service SID not found',
+                ], 400);
+            }
+
+            // Send verification code
+            $verification = $twilioService->sendVerification($to, $channel, $verifyServiceSid);
+
+            $dateCreated = $verification->dateCreated ?? null;
+            $dateUpdated = $verification->dateUpdated ?? null;
+            
+            if ($dateCreated instanceof \DateTime) {
+                $dateCreated = $dateCreated->format('Y-m-d H:i:s');
+            } elseif (is_string($dateCreated)) {
+                $dateCreated = $dateCreated;
+            } else {
+                $dateCreated = null;
+            }
+
+            if ($dateUpdated instanceof \DateTime) {
+                $dateUpdated = $dateUpdated->format('Y-m-d H:i:s');
+            } elseif (is_string($dateUpdated)) {
+                $dateUpdated = $dateUpdated;
+            } else {
+                $dateUpdated = null;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP sent successfully',
+                'data' => [
+                    'sid' => $verification->sid ?? null,
+                    'service_sid' => $verification->serviceSid ?? null,
+                    'to' => $verification->to ?? null,
+                    'channel' => $verification->channel ?? null,
+                    'status' => $verification->status ?? null,
+                    'date_created' => $dateCreated,
+                    'date_updated' => $dateUpdated,
+                    'url' => $verification->url ?? null,
+                ],
+                'error' => (object) [],
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error in sendOTP: ' . $e->getMessage());
+
+            // Handle specific Twilio errors
+            if ($e->getCode() == 60200) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number must be in E.164 format (e.g., +1234567890)',
+                    'data' => (object) [],
+                    'error' => $e->getMessage(),
+                ], 400);
+            }
+
+            if ($e->getCode() == 60203) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many verification attempts. Please try again later.',
+                    'data' => (object) [],
+                    'error' => $e->getMessage(),
+                ], 429);
+            }
+
+            if (str_contains($e->getMessage(), 'Verify service SID is required')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Verify service SID is required. Please create a service first.',
+                    'data' => (object) [],
+                    'error' => $e->getMessage(),
+                ], 400);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send OTP',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Verify OTP Code
+     */
+    public function verifyOTP(Request $request)
+    {
+        $request->validate([
+            'to' => 'required|string',
+            'code' => 'required|string',
+            'service_sid' => 'nullable|string',
+        ]);
+
+        try {
+            $to = $request->to;
+            $code = $request->code;
+            $customServiceSid = $request->service_sid;
+
+            $twilioService = new TwilioService();
+
+            // Check if service SID is available
+            $verifyServiceSid = $customServiceSid ?? $twilioService->getServiceSid();
+
+            if (!$verifyServiceSid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Verify service SID is required. Please create a service first.',
+                    'data' => (object) [],
+                    'error' => 'Service SID not found',
+                ], 400);
+            }
+
+            // Verify the code
+            $verificationCheck = $twilioService->verifyCode($to, $code, $verifyServiceSid);
+
+            // Handle date fields safely
+            $dateCreated = $verificationCheck->dateCreated ?? null;
+            $dateUpdated = $verificationCheck->dateUpdated ?? null;
+            
+            if ($dateCreated instanceof \DateTime) {
+                $dateCreated = $dateCreated->format('Y-m-d H:i:s');
+            } elseif (is_string($dateCreated)) {
+                $dateCreated = $dateCreated;
+            } else {
+                $dateCreated = null;
+            }
+
+            if ($dateUpdated instanceof \DateTime) {
+                $dateUpdated = $dateUpdated->format('Y-m-d H:i:s');
+            } elseif (is_string($dateUpdated)) {
+                $dateUpdated = $dateUpdated;
+            } else {
+                $dateUpdated = null;
+            }
+
+            if ($verificationCheck->status === 'approved') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'OTP verified successfully',
+                    'data' => [
+                        'sid' => $verificationCheck->sid ?? null,
+                        'service_sid' => $verificationCheck->serviceSid ?? null,
+                        'to' => $verificationCheck->to ?? null,
+                        'channel' => $verificationCheck->channel ?? null,
+                        'status' => $verificationCheck->status ?? null,
+                        'valid' => $verificationCheck->valid ?? false,
+                        'date_created' => $dateCreated,
+                        'date_updated' => $dateUpdated,
+                    ],
+                    'error' => (object) [],
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid or expired verification code',
+                    'data' => [
+                        'sid' => $verificationCheck->sid ?? null,
+                        'status' => $verificationCheck->status ?? null,
+                        'valid' => $verificationCheck->valid ?? false,
+                    ],
+                    'error' => 'Verification failed',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in verifyOTP: ' . $e->getMessage());
+
+            // Handle specific Twilio errors
+            if ($e->getCode() == 60202) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many verification attempts. Please request a new code.',
+                    'data' => (object) [],
+                    'error' => $e->getMessage(),
+                ], 400);
+            }
+
+            if ($e->getCode() == 20404) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Verification not found. Please request a new OTP.',
+                    'data' => (object) [],
+                    'error' => $e->getMessage(),
+                ], 404);
+            }
+
+            if (str_contains($e->getMessage(), 'Verify service SID is required')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Verify service SID is required. Please create a service first.',
+                    'data' => (object) [],
+                    'error' => $e->getMessage(),
+                ], 400);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to verify OTP',
                 'data' => (object) [],
                 'error' => $e->getMessage(),
             ], 500);

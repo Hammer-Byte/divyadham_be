@@ -33,6 +33,8 @@ Route::prefix('oauth')->group(function () {
 Route::post('mobile-number-check', [LoginController::class, 'mobileNumberCheck'])->name('mobileNumberCheck');
 Route::post('login', [LoginController::class, 'index'])->name('login');
 Route::post('register-user', [LoginController::class, 'registerUser'])->name('registerUser');
+Route::post('send-otp', [LoginController::class, 'sendOTP'])->name('sendOTP');
+Route::post('verify-otp', [LoginController::class, 'verifyOTP'])->name('verifyOTP');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('master', [MasterController::class, 'index'])->name('master');

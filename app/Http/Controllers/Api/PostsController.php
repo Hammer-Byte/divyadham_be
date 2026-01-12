@@ -272,5 +272,40 @@ class PostsController extends Controller
             ], 500);
         }
     }
+    public function reportPost(Request $request)
+    {
+        $request->validate([
+            'post_id' => 'required|exists:posts,id',
+            'reported_comment' => 'required|string',
+        ]);
+
+        try {
+            $user = auth()->user();
+
+            $post = Post::find($request->post_id);
+            
+            $post->reported_comment = $request->reported_comment;
+            $post->reportedBy = $user->id;
+            $post->isPostReported = true;
+            $post->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post reported successfully.',
+                'data' => (object) [],
+                'error' => (object) [],
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
 

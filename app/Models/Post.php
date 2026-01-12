@@ -29,6 +29,9 @@ class Post extends Model
         'link_image_url',
         'donation_id',
         'status',
+        'reported_comment',
+        'reportedBy',
+        'isPostReported',
     ];
 
     protected $casts = [

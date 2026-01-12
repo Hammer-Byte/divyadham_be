@@ -199,6 +199,30 @@ class LoginController extends Controller
         }
     }
 
+    public function deleteAccount(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Account deleted successfully.',
+                'data' => (object) [],
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     /**
      * Send OTP Verification Code
      */

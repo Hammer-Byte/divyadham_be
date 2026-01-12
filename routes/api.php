@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\PublicDocumentsController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\FamilyMemberController;
 use App\Http\Controllers\Api\DonationsController;
+use App\Http\Controllers\Api\ContactUsController;
 
 Route::prefix('oauth')->group(function () {
     Route::post('/token', [AccessTokenController::class, 'issueToken'])->name('passport.token');
@@ -84,4 +85,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('my-contributions', [DonationsController::class, 'myContributions'])->name('my-contributions');
 
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('delete-account', [LoginController::class, 'deleteAccount'])->name('delete-account');
+    Route::post('contact-us', [ContactUsController::class, 'store'])->name('contact-us');
 });

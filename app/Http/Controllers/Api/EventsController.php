@@ -38,7 +38,7 @@ class EventsController extends Controller
                     ->first();
                 
                 $event->is_registered = $registration ? true : false;
-                $event->registration_status = $registration; // sending the whole object if needed, or just status
+                $event->registration_status = $registration; 
                 return $event;
             });
 

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\PostComment;
+use App\Models\BlockedUser;
 
 class PostsController extends Controller
 {
@@ -24,7 +25,16 @@ class PostsController extends Controller
         try{
             $user = auth()->user();
 
-            $data['posts'] = Post::with('getUser')->with('getPostLikes')->with('getPostComments')->with('getDonation')->orderBy('created_at', 'DESC')->paginate(20);
+            // Get IDs of users blocked by the logged-in user
+            $blockedUserIds = BlockedUser::where('user_id', $user->id)->pluck('blocked_user_id')->toArray();
+
+            $data['posts'] = Post::whereNotIn('user_id', $blockedUserIds)
+                ->with('getUser')
+                ->with('getPostLikes')
+                ->with('getPostComments')
+                ->with('getDonation')
+                ->orderBy('created_at', 'DESC')
+                ->paginate(20);
 
             return response()->json([
                 'success' => true,
@@ -206,4 +216,61 @@ class PostsController extends Controller
             ], 500);
         }
     }
+
+    public function blockUser(Request $request)
+    {
+        $request->validate([
+            'blocked_user_id' => 'required|exists:users,id',
+        ]);
+
+        try {
+            $user = auth()->user();
+
+            if ($user->id == $request->blocked_user_id) {
+                 return response()->json([
+                    'success' => false,
+                    'message' => 'You cannot block yourself.',
+                    'data' => (object) [],
+                    'error' => 'Self-blocking not allowed',
+                ], 400);
+            }
+
+            // Check if already blocked
+            $exists = BlockedUser::where('user_id', $user->id)
+                ->where('blocked_user_id', $request->blocked_user_id)
+                ->exists();
+
+            if ($exists) {
+                 return response()->json([
+                    'success' => true,
+                    'message' => 'User already blocked.',
+                    'data' => (object) [],
+                    'error' => (object) [],
+                ], 200);
+            }
+
+            BlockedUser::create([
+                'user_id' => $user->id,
+                'blocked_user_id' => $request->blocked_user_id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User blocked successfully.',
+                'data' => (object) [],
+                'error' => (object) [],
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
+

@@ -148,28 +148,19 @@ class LoginController extends Controller
             $data['password'] = Hash::make($request->password);
             $data['device_type'] = isset($request->device_type) ? $request->device_type : null;
             $data['device_token'] = isset($request->device_token) ? $request->device_token : null;
-            $data['is_verified'] = isset($existOffilne) ? 1 : 0;
+            $data['is_verified'] = 1;
 
             $user = User::create($data);
 
-            if($user->is_verified == 1){
-                $data['token'] = $user->createToken('UserApp')->accessToken;
-                $data['user'] = $user;
+            $data['token'] = $user->createToken('UserApp')->accessToken;
+            $data['user'] = $user;
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'User registered successfully',
-                    'data' => $data,
-                    'error' => (object) [],
-                    ], 200);
-            }else{
-                return response()->json([
-                    'success' => true,
-                    'message' => 'User registered successfully and your profile is under review, please login after sometime.',
-                    'data' => (object) [],
-                    'error' => (object) [],
-                    ], 200);
-            }
+            return response()->json([
+                'success' => true,
+                'message' => 'User registered successfully',
+                'data' => $data,
+                'error' => (object) [],
+                ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 

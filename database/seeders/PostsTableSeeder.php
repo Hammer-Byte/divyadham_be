@@ -32,7 +32,7 @@ class PostsTableSeeder extends Seeder
                 'type' => 'media',
                 'content' => 'Beautiful sunset from our village!',
                 'media_upload_type' => 'url',
-                'media_url' => json_encode(['https://via.placeholder.com/800x600']),
+                'media_url' => ['https://via.placeholder.com/800x600'],
                 'media_type' => 'image',
                 'status' => 1,
             ],
@@ -57,8 +57,22 @@ class PostsTableSeeder extends Seeder
                 'type' => 'media',
                 'content' => 'Memories from the educational workshop. Great learning experience!',
                 'media_upload_type' => 'url',
-                'media_url' => json_encode(['https://via.placeholder.com/800x600']),
+                'media_url' => ['https://via.placeholder.com/800x600'],
                 'media_type' => 'image',
+                'status' => 1,
+            ],
+            [
+                'user_id' => $user->id,
+                'type' => 'media',
+                'content' => 'Here are some highlights from our cultural festival event!',
+                'media_upload_type' => 'url',
+                'media_url' => [
+                    'https://via.placeholder.com/800x600?text=Event+1',
+                    'https://via.placeholder.com/800x600?text=Event+2',
+                    'https://via.placeholder.com/800x600?text=Event+3',
+                    'https://via.placeholder.com/800x600?text=Video+Thumbnail'
+                ],
+                'media_type' => 'gallery', 
                 'status' => 1,
             ],
         ];

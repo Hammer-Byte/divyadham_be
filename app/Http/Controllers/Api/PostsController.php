@@ -54,9 +54,9 @@ class PostsController extends Controller
             'link_url' => 'nullable|required_if:type,link|url',
             'link_image_url' => 'nullable|required_if:type,link|url',
             'media_upload_type' => 'required_if:type,media|in:file_upload,url',
-            'media_type_file.*' => 'required_if:media_upload_type,file_upload|mimes:jpg,jpeg,png|max:20480',
+            'media_type_file.*' => 'required_if:media_upload_type,file_upload|mimes:jpg,jpeg,png,mp4,mov,avi,wmv,flv,3gp,mkv|max:20480',
             'media_type_url' => 'nullable|required_if:media_upload_type,url|url',
-            'media_type' => 'required_if:type,media|in:image,video',
+            'media_type' => 'required_if:type,media|in:image,video,gallery,mixed',
         ]);
 
         try{
@@ -67,7 +67,7 @@ class PostsController extends Controller
             $data['status'] = 1;
 
             if ($request->media_upload_type == 'file_upload') {
-                $data['media_url'] = [];
+                $media_urls = [];
 
                 $files = $request->file('media_type_file');
 
@@ -78,11 +78,12 @@ class PostsController extends Controller
 
                     foreach ($files as $file) {
                         $url = storeFile($file, 'post_media');
-                        $data['media_url'][] = $url;
+                        $media_urls[] = $url;
                     }
                 }
 
-                $data['media_url'] = json_encode($data['media_url']);
+                // Store as array directly, the model cast handles JSON encoding/decoding
+                $data['media_url'] = $media_urls;
             }else if ($request->media_upload_type == 'url') {
                 $data['media_url'] = $request->media_type_url;
             }

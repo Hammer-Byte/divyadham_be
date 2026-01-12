@@ -14,6 +14,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\Villages;
+use App\Models\State;
+use App\Models\District;
 
 class VillagesController extends Controller
 {
@@ -61,6 +63,87 @@ class VillagesController extends Controller
                 'success' => true,
                 'message' => 'Api called successfully',
                 'data' => $data,
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getStates(Request $request)
+    {
+        try{
+            $states = State::get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'States fetched successfully',
+                'data' => $states,
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getDistricts(Request $request)
+    {
+        $request->validate([
+            'state_id' => 'required|exists:states,id',
+        ]);
+
+        try{
+            $districts = District::where('state_id', $request->state_id)->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Districts fetched successfully',
+                'data' => $districts,
+                'error' => (object) [],
+                ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getVillagesByStateAndDistrict(Request $request)
+    {
+        $request->validate([
+            'state_id' => 'required',
+            'district_id' => 'required',
+        ]);
+
+        try{
+            $villages = Villages::where('state', $request->state_id)
+                ->where('district', $request->district_id)
+                ->where('status', 1)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Villages fetched successfully',
+                'data' => $villages,
                 'error' => (object) [],
                 ], 200);
         } catch (\Exception $e) {

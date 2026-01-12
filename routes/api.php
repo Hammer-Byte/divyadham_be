@@ -58,6 +58,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('villages', [VillagesController::class, 'villages'])->name('villages');
     Route::get('village-detail/{id}', [VillagesController::class, 'villageDetail'])->name('village-detail');
+    Route::get('get-states', [VillagesController::class, 'getStates'])->name('get-states');
+    Route::get('get-districts', [VillagesController::class, 'getDistricts'])->name('get-districts');
+    Route::get('get-villages-by-state-and-district', [VillagesController::class, 'getVillagesByStateAndDistrict'])->name('get-villages-by-state-and-district');
 
     Route::get('committees', [CommitteesController::class, 'committees'])->name('committees');
     Route::get('committee-detail/{id}', [CommitteesController::class, 'committeeDetail'])->name('committee-detail');

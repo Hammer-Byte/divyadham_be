@@ -36,6 +36,10 @@ Route::post('register-user', [LoginController::class, 'registerUser'])->name('re
 Route::post('send-otp', [LoginController::class, 'sendOTP'])->name('sendOTP');
 Route::post('verify-otp', [LoginController::class, 'verifyOTP'])->name('verifyOTP');
 
+Route::get('get-states', [LoginController::class, 'getStates'])->name('get-states');
+Route::post('get-districts', [LoginController::class, 'getDistricts'])->name('get-districts');
+Route::post('get-villages-by-state-and-district', [LoginController::class, 'getVillagesByStateAndDistrict'])->name('get-villages-by-state-and-district');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('master', [MasterController::class, 'index'])->name('master');
     Route::get('user-profile', [MasterController::class, 'userProfile'])->name('user-profile');
@@ -58,9 +62,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('villages', [VillagesController::class, 'villages'])->name('villages');
     Route::get('village-detail/{id}', [VillagesController::class, 'villageDetail'])->name('village-detail');
-    Route::get('get-states', [VillagesController::class, 'getStates'])->name('get-states'); // States usually don't need body, but keeping consistent if you want
-    Route::post('get-districts', [VillagesController::class, 'getDistricts'])->name('get-districts');
-    Route::post('get-villages-by-state-and-district', [VillagesController::class, 'getVillagesByStateAndDistrict'])->name('get-villages-by-state-and-district');
 
     Route::get('committees', [CommitteesController::class, 'committees'])->name('committees');
     Route::get('committee-detail/{id}', [CommitteesController::class, 'committeeDetail'])->name('committee-detail');

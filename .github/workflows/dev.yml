@@ -43,7 +43,7 @@ jobs:
             echo "Cleaning up duplicate OAuth migrations..."
             find database/migrations -name "2026_*_create_oauth_*.php" -type f -delete || true
             
-            echo "Installing dependencies..."
+            echo "Installing dependencies...."
             composer install --optimize-autoloader
             php artisan config:clear
             php artisan key:generate

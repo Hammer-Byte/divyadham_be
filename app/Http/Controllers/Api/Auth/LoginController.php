@@ -238,6 +238,26 @@ class LoginController extends Controller
             $channel = 'sms'; // Hardcoded to SMS
             $customServiceSid = $request->service_sid;
 
+            // Test bypass for Play Store testing - skip Twilio for test number
+            $normalizedTo = str_replace('+', '', $to);
+            if ($normalizedTo == '9999999999' || $normalizedTo == '919999999999' || substr($normalizedTo, -10) == '9999999999') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'OTP sent successfully',
+                    'data' => [
+                        'sid' => 'test_bypass_' . time(),
+                        'service_sid' => 'test_service',
+                        'to' => $to,
+                        'channel' => 'sms',
+                        'status' => 'pending',
+                        'date_created' => date('Y-m-d H:i:s'),
+                        'date_updated' => date('Y-m-d H:i:s'),
+                        'url' => null,
+                    ],
+                    'error' => (object) [],
+                ], 200);
+            }
+
             // Validate phone number format (should start with +)
             if (!str_starts_with($to, '+')) {
                 return response()->json([
@@ -354,6 +374,26 @@ class LoginController extends Controller
             $to = $request->to;
             $code = $request->code;
             $customServiceSid = $request->service_sid;
+
+            // Test bypass for Play Store testing - skip Twilio for test number
+            $normalizedTo = str_replace('+', '', $to);
+            if (($normalizedTo == '9999999999' || $normalizedTo == '919999999999' || substr($normalizedTo, -10) == '9999999999') && $code == '123456') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'OTP verified successfully',
+                    'data' => [
+                        'sid' => 'test_bypass_' . time(),
+                        'service_sid' => 'test_service',
+                        'to' => $to,
+                        'channel' => 'sms',
+                        'status' => 'approved',
+                        'valid' => true,
+                        'date_created' => date('Y-m-d H:i:s'),
+                        'date_updated' => date('Y-m-d H:i:s'),
+                    ],
+                    'error' => (object) [],
+                ], 200);
+            }
 
             $twilioService = new TwilioService();
 

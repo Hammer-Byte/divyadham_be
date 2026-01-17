@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\PublicDocumentsController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\FamilyMemberController;
 use App\Http\Controllers\Api\DonationsController;
+use App\Http\Controllers\Api\ContactUsController;
 
 Route::prefix('oauth')->group(function () {
     Route::post('/token', [AccessTokenController::class, 'issueToken'])->name('passport.token');
@@ -35,6 +36,10 @@ Route::post('login', [LoginController::class, 'index'])->name('login');
 Route::post('register-user', [LoginController::class, 'registerUser'])->name('registerUser');
 Route::post('send-otp', [LoginController::class, 'sendOTP'])->name('sendOTP');
 Route::post('verify-otp', [LoginController::class, 'verifyOTP'])->name('verifyOTP');
+
+Route::get('get-states', [LoginController::class, 'getStates'])->name('get-states');
+Route::post('get-districts', [LoginController::class, 'getDistricts'])->name('get-districts');
+Route::post('get-villages-by-state-and-district', [LoginController::class, 'getVillagesByStateAndDistrict'])->name('get-villages-by-state-and-district');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('master', [MasterController::class, 'index'])->name('master');
@@ -51,6 +56,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('add-post', [PostsController::class, 'addPost'])->name('add-post');
     Route::post('like-post', [PostsController::class, 'likePost'])->name('like-post');
     Route::post('add-comment', [PostsController::class, 'addPostComment'])->name('add-comment');
+    Route::post('block-user', [PostsController::class, 'blockUser'])->name('block-user');
+    Route::post('report-post', [PostsController::class, 'reportPost'])->name('report-post');
 
     Route::get('events', [EventsController::class, 'events'])->name('events');
     Route::get('event-detail/{id}', [EventsController::class, 'eventDetail'])->name('event-detail');
@@ -78,4 +85,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('my-contributions', [DonationsController::class, 'myContributions'])->name('my-contributions');
 
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('delete-account', [LoginController::class, 'deleteAccount'])->name('delete-account');
+    Route::post('contact-us', [ContactUsController::class, 'store'])->name('contact-us');
 });

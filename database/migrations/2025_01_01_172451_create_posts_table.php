@@ -17,8 +17,8 @@ return new class extends Migration
             $table->enum('type', ['text', 'media', 'link', 'donation']);
             $table->text('content')->nullable();
             $table->enum('media_upload_type', ['file_upload', 'url'])->nullable();
-            $table->text('media_url')->nullable();
-            $table->enum('media_type', ['image', 'video'])->nullable();
+            $table->longText('media_url')->nullable();
+            $table->string('media_type')->nullable();
             $table->string('link_url', length: 2048)->nullable();
             $table->string('link_title', length: 250)->nullable();
             $table->text('link_description')->nullable();

@@ -17,6 +17,17 @@ use App\Models\Pages;
 
 class PagesController extends Controller
 {
+    public function renderPage($slug)
+    {
+        $page = Pages::where('status', 1)->where('slug', $slug)->first();
+        
+        // Decode HTML entities if content is double-encoded
+        // This ensures HTML tags are properly rendered
+        $page->content = html_entity_decode($page->content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        
+        return view('dynamic', ['page' => $page]);
+    }
+
     public function getPage(Request $request)
     {
         try{

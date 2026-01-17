@@ -49,7 +49,6 @@
 @endsection
 
 @section('extraScript')
-<script src="{{ asset('admin/assets/js/tinymce/tinymce.min.js') }}"></script>
 
 <script>
     $(document).ready(function() {

@@ -14,6 +14,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\Villages;
+use App\Models\State;
+use App\Models\District;
 
 class VillagesController extends Controller
 {
@@ -74,4 +76,5 @@ class VillagesController extends Controller
             ], 500);
         }
     }
+
 }

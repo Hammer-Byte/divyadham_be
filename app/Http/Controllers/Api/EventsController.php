@@ -32,6 +32,16 @@ class EventsController extends Controller
 
             $events = $events->paginate(20);
 
+            $events->getCollection()->transform(function ($event) use ($user) {
+                $registration = EventRegistration::where('user_id', $user->id)
+                    ->where('event_id', $event->id)
+                    ->first();
+                
+                $event->is_registered = $registration ? true : false;
+                $event->registration_status = $registration; 
+                return $event;
+            });
+
             $data['events'] = $events;
             return response()->json([
                 'success' => true,
@@ -57,8 +67,13 @@ class EventsController extends Controller
             $user = auth()->user();
 
             $data['eventDetail'] = Events::where('id', $request->id)->where('status', 1)->with('getEventMedia')->first();
-
+            
             if ($data['eventDetail']) {
+                $registration = EventRegistration::where('user_id', $user->id)
+                    ->where('event_id', $request->id)
+                    ->first();
+                $data['eventDetail']->is_registered = $registration ? true : false;
+                
                 $organizersData = Organizer::whereIn('id',explode(',', $data['eventDetail']->organizers))->pluck('user_id')->all();
 
                 $data['organizers'] = User::withoutSystemAdmin()->whereIn('id', $organizersData)->get();

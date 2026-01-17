@@ -23,9 +23,17 @@ class StoriesController extends Controller
         try{
             $user = auth()->user();
 
-            $data['stories'] = Storie::where('user_id', "!=", $user->id)->with('getUser')->orderBy('created_at', 'DESC')->paginate(20);
+            $data['stories'] = Storie::where('user_id', "!=", $user->id)
+                ->where('created_at', '>=', now()->subHours(24))
+                ->with('getUser')
+                ->orderBy('created_at', 'DESC')
+                ->get();
 
-            $data['ownStories'] = Storie::where('user_id', $user->id)->with('getUser')->orderBy('created_at', 'DESC')->get();
+            $data['ownStories'] = Storie::where('user_id', $user->id)
+                ->where('created_at', '>=', now()->subHours(24))
+                ->with('getUser')
+                ->orderBy('created_at', 'DESC')
+                ->get();
 
             return response()->json([
                 'success' => true,

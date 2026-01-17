@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\PostComment;
+use App\Models\BlockedUser;
 
 class PostsController extends Controller
 {
@@ -24,7 +25,16 @@ class PostsController extends Controller
         try{
             $user = auth()->user();
 
-            $data['posts'] = Post::with('getUser')->with('getPostLikes')->with('getPostComments')->with('getDonation')->orderBy('created_at', 'DESC')->paginate(20);
+            // Get IDs of users blocked by the logged-in user
+            $blockedUserIds = BlockedUser::where('user_id', $user->id)->pluck('blocked_user_id')->toArray();
+
+            $data['posts'] = Post::whereNotIn('user_id', $blockedUserIds)
+                ->with('getUser')
+                ->with('getPostLikes')
+                ->with('getPostComments')
+                ->with('getDonation')
+                ->orderBy('created_at', 'DESC')
+                ->paginate(20);
 
             return response()->json([
                 'success' => true,
@@ -54,9 +64,9 @@ class PostsController extends Controller
             'link_url' => 'nullable|required_if:type,link|url',
             'link_image_url' => 'nullable|required_if:type,link|url',
             'media_upload_type' => 'required_if:type,media|in:file_upload,url',
-            'media_type_file.*' => 'required_if:media_upload_type,file_upload|mimes:jpg,jpeg,png|max:20480',
+            'media_type_file.*' => 'required_if:media_upload_type,file_upload|mimes:jpg,jpeg,png,mp4,mov,avi,wmv,flv,3gp,mkv|max:20480',
             'media_type_url' => 'nullable|required_if:media_upload_type,url|url',
-            'media_type' => 'required_if:type,media|in:image,video',
+            'media_type' => 'required_if:type,media|in:image,video,gallery,mixed',
         ]);
 
         try{
@@ -67,7 +77,7 @@ class PostsController extends Controller
             $data['status'] = 1;
 
             if ($request->media_upload_type == 'file_upload') {
-                $data['media_url'] = [];
+                $media_urls = [];
 
                 $files = $request->file('media_type_file');
 
@@ -78,11 +88,12 @@ class PostsController extends Controller
 
                     foreach ($files as $file) {
                         $url = storeFile($file, 'post_media');
-                        $data['media_url'][] = $url;
+                        $media_urls[] = $url;
                     }
                 }
 
-                $data['media_url'] = json_encode($data['media_url']);
+                // Store as array directly, the model cast handles JSON encoding/decoding
+                $data['media_url'] = $media_urls;
             }else if ($request->media_upload_type == 'url') {
                 $data['media_url'] = $request->media_type_url;
             }
@@ -205,4 +216,96 @@ class PostsController extends Controller
             ], 500);
         }
     }
+
+    public function blockUser(Request $request)
+    {
+        $request->validate([
+            'blocked_user_id' => 'required|exists:users,id',
+        ]);
+
+        try {
+            $user = auth()->user();
+
+            if ($user->id == $request->blocked_user_id) {
+                 return response()->json([
+                    'success' => false,
+                    'message' => 'You cannot block yourself.',
+                    'data' => (object) [],
+                    'error' => 'Self-blocking not allowed',
+                ], 400);
+            }
+
+            // Check if already blocked
+            $exists = BlockedUser::where('user_id', $user->id)
+                ->where('blocked_user_id', $request->blocked_user_id)
+                ->exists();
+
+            if ($exists) {
+                 return response()->json([
+                    'success' => true,
+                    'message' => 'User already blocked.',
+                    'data' => (object) [],
+                    'error' => (object) [],
+                ], 200);
+            }
+
+            BlockedUser::create([
+                'user_id' => $user->id,
+                'blocked_user_id' => $request->blocked_user_id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User blocked successfully.',
+                'data' => (object) [],
+                'error' => (object) [],
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function reportPost(Request $request)
+    {
+        $request->validate([
+            'post_id' => 'required|exists:posts,id',
+            'reported_comment' => 'required|string',
+        ]);
+
+        try {
+            $user = auth()->user();
+
+            $post = Post::find($request->post_id);
+            
+            $post->reported_comment = $request->reported_comment;
+            $post->reportedBy = $user->id;
+            $post->isPostReported = true;
+            $post->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post reported successfully.',
+                'data' => (object) [],
+                'error' => (object) [],
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
+

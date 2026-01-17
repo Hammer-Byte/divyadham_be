@@ -29,6 +29,13 @@ class Post extends Model
         'link_image_url',
         'donation_id',
         'status',
+        'reported_comment',
+        'reportedBy',
+        'isPostReported',
+    ];
+
+    protected $casts = [
+        'media_url' => 'array',
     ];
 
     protected $appends = ['media_full_url'];
@@ -41,8 +48,17 @@ class Post extends Model
 
         if ($this->media_upload_type == 'file_upload') {
             $media_urls = [];
-            foreach (json_decode($this->media_url) as $key => $value) {
-                array_push($media_urls, getFileUrl($value));
+            $mediaData = $this->media_url;
+            
+            // Handle case where cast might not have worked or data is raw string
+            if (is_string($mediaData)) {
+                $mediaData = json_decode($mediaData, true);
+            }
+            
+            if (is_array($mediaData)) {
+                foreach ($mediaData as $key => $value) {
+                    array_push($media_urls, getFileUrl($value));
+                }
             }
             return $media_urls;
         }else {

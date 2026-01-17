@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - added_story_hide24Hours
 
 jobs:
   deploy:
@@ -42,7 +43,7 @@ jobs:
             echo "Cleaning up duplicate OAuth migrations..."
             find database/migrations -name "2026_*_create_oauth_*.php" -type f -delete || true
             
-            echo "Installing dependencies..."
+            echo "Installing dependencies...."
             composer install --optimize-autoloader
             php artisan config:clear
             php artisan key:generate
@@ -60,7 +61,7 @@ jobs:
             php artisan view:clear
 
             echo "Starting app..."
-            nohup php artisan serve > /dev/null 2>&1 &
+            nohup php artisan serve --env=production > /dev/null 2>&1 &
             echo "Starting ${{ env.REPO }}"
             echo "✅ Deployed & Disconnecting SSH"
             exit 0

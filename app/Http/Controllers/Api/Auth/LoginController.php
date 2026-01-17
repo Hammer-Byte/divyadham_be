@@ -240,7 +240,7 @@ class LoginController extends Controller
 
             // Test bypass for Play Store testing - skip Twilio for test number
             $normalizedTo = str_replace('+', '', $to);
-            if ($normalizedTo == '9999999999') {
+            if ($normalizedTo == '9999999999' || $normalizedTo == '919999999999' || substr($normalizedTo, -10) == '9999999999') {
                 return response()->json([
                     'success' => true,
                     'message' => 'OTP sent successfully',
@@ -377,7 +377,7 @@ class LoginController extends Controller
 
             // Test bypass for Play Store testing - skip Twilio for test number
             $normalizedTo = str_replace('+', '', $to);
-            if ($normalizedTo == '9999999999' && $code == '123456') {
+            if (($normalizedTo == '9999999999' || $normalizedTo == '919999999999' || substr($normalizedTo, -10) == '9999999999') && $code == '123456') {
                 return response()->json([
                     'success' => true,
                     'message' => 'OTP verified successfully',

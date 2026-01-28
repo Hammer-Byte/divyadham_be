@@ -1,0 +1,67 @@
+name: divyadham_api MAIN Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DEPLOYMENT_DIRECTORY: "/var/www/sites/prod-divyadham.hammerbyte.co.in/"
+      REPO: "divyadham_api"
+      BRANCH: ${{ github.ref_name }}
+      PORT: 8100
+
+    steps:
+      - name: Preparing SSH
+        run: sudo apt-get install -y sshpass
+
+      - name: SSH Deployment
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USERNAME }}@${{ secrets.HOSTING_SERVER }}" << 'EOF'
+            set -e
+            cd "${{ env.DEPLOYMENT_DIRECTORY }}"
+            echo "Cleaning up port ${{env.PORT}}..."
+            fuser -k ${{ env.PORT }}/tcp || true
+            if [ -d "${{ env.REPO }}" ]; then
+              cd "${{ env.REPO }}"
+              echo "Fetching Changes..."
+              git stash
+              git fetch origin "${{env.BRANCH}}"
+              git checkout "${{env.BRANCH}}"
+              git pull origin "${{env.BRANCH}}" --rebase
+            else
+              echo "Fetching Source - ${{ env.REPO }}"
+              git clone --branch "${{env.BRANCH}}" https://github.com/Hammer-Byte/${{ env.REPO }}
+              cd "${{ env.REPO }}"
+            fi
+
+            echo "Cleaning up duplicate OAuth migrations..."
+            find database/migrations -name "2026_*_create_oauth_*.php" -type f -delete || true
+            
+            echo "Installing dependencies...."
+            composer install --optimize-autoloader
+            php artisan config:clear
+            php artisan key:generate
+            php artisan storage:link
+            php artisan migrate
+            php artisan passport:keys --force
+            php artisan passport:client --personal --name="Personal Access Client" || true
+            
+            
+            npm install --legacy-peer-deps
+            npx mix --production
+
+            php artisan optimize:clear
+            php artisan view:clear
+
+            echo "Starting app..."
+            nohup php artisan serve --env=production > /dev/null 2>&1 &
+            echo "Starting ${{ env.REPO }}"
+            echo "✅ Deployed & Disconnecting SSH"
+            exit 0
+          EOF
+

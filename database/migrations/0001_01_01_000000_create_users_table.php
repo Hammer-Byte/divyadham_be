@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('last_name', length: 150)->nullable();
             $table->string('profile_image', length: 250)->nullable();
             $table->string('email', length: 150);
-            $table->string('password', length: 250);
+            $table->string('password', length: 250)->nullable(); // Password is optional because it is not required in registration
             $table->string('occupation', length: 150)->nullable();
             $table->string('campany_name', length: 250)->nullable();
             $table->string('address', length: 250)->nullable();

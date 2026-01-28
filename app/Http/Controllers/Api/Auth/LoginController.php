@@ -115,7 +115,7 @@ class LoginController extends Controller
             'last_name' => 'required',
             'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:5120',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required',
+            // 'password' => 'required', // Password field removed - not required in registration
             'occupation' => 'nullable',
             'campany_name' => 'nullable',
             'address' => 'nullable',
@@ -148,7 +148,8 @@ class LoginController extends Controller
             }
 
             $data['status'] = 1;
-            $data['password'] = Hash::make($request->password);
+            // Password field removed - not required in registration
+            // $data['password'] = Hash::make($request->password);
             $data['device_type'] = isset($request->device_type) ? $request->device_type : null;
             $data['device_token'] = isset($request->device_token) ? $request->device_token : null;
             $data['is_verified'] = 1;

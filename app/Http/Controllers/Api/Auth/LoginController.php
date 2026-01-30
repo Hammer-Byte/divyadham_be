@@ -581,4 +581,84 @@ class LoginController extends Controller
             ], 500);
         }
     }
+
+    public function addVillage(Request $request)
+    {
+        try{
+            // Validate input
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'state' => 'required|string|max:255',
+                'district' => 'required|string|max:255',
+                'population' => 'nullable|numeric|min:0',
+                'latitude' => 'nullable|numeric',
+                'longitude' => 'nullable|numeric',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed.',
+                    'data' => (object) [],
+                    'error' => $validator->errors(),
+                ], 422);
+            }
+
+            // Find state by name
+            $state = State::where('name', $request->state)->first();
+            
+            if (!$state) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'State not found.',
+                    'data' => (object) [],
+                    'error' => 'The provided state name does not exist.',
+                ], 404);
+            }
+
+            // Find district by name (also verify it belongs to the state)
+            $district = District::where('name', $request->district)
+                ->where('state_id', $state->id)
+                ->first();
+            
+            if (!$district) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'District not found or does not belong to the specified state.',
+                    'data' => (object) [],
+                    'error' => 'The provided district name does not exist or is not associated with the specified state.',
+                ], 404);
+            }
+
+            // Create village
+            $village = Villages::create([
+                'name' => $request->name,
+                'state' => $state->id,
+                'district' => $district->id,
+                'population' => $request->population ?? 0,
+                'latitude' => $request->latitude ?? 0,
+                'longitude' => $request->longitude ?? 0,
+                'status' => 1,
+            ]);
+
+            $data['village'] = $village->load('getState', 'getDistrict');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Village added successfully',
+                'data' => $data,
+                'error' => (object) [],
+            ], 201);
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

@@ -57,8 +57,8 @@ class NotificationController extends Controller
                 $notifications = $notifications->where('is_read', 0);
             }
 
-            $data['notifications'] = $notifications->paginate(20);
-
+            $data['notifications'] = $notifications->orderBy('created_at', 'DESC')->paginate(20);
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Api called successfully',

@@ -9,9 +9,23 @@ class FirebaseNotificationHelper
 {
     public static function sendFCMNotification($deviceToken, $title, $body, $data = [])
     {
+        // Validate device token
+        if (empty($deviceToken)) {
+            throw new \Exception('Device token is required for FCM notification');
+        }
+
         $credentialsPath = storage_path('app/firebase/firebase_credentials.json');
 
-        $clientEmail = json_decode(file_get_contents($credentialsPath), true)['client_email'];
+        // Check if credentials file exists
+        if (!file_exists($credentialsPath)) {
+            throw new \Exception('Firebase credentials file not found');
+        }
+
+        $credentials = json_decode(file_get_contents($credentialsPath), true);
+        
+        if (!isset($credentials['client_email']) || !isset($credentials['project_id'])) {
+            throw new \Exception('Invalid Firebase credentials file');
+        }
 
         $scopedCredentials = new ServiceAccountCredentials(
             'https://www.googleapis.com/auth/firebase.messaging',
@@ -20,7 +34,13 @@ class FirebaseNotificationHelper
 
         $accessToken = $scopedCredentials->fetchAuthToken()['access_token'];
 
-        $projectId = json_decode(file_get_contents($credentialsPath), true)['project_id'];
+        $projectId = $credentials['project_id'];
+
+        // Convert all data values to strings (FCM requirement)
+        $dataString = [];
+        foreach ($data as $key => $value) {
+            $dataString[$key] = (string)$value;
+        }
 
         $response = Http::withToken($accessToken)
             ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
@@ -30,7 +50,7 @@ class FirebaseNotificationHelper
                         'title' => $title,
                         'body' => $body,
                     ],
-                    'data' => $data,
+                    'data' => $dataString,
                 ],
             ]);
 

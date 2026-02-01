@@ -82,23 +82,31 @@ class FamilyMemberController extends Controller
                     ];
                     $memberData = FamilyMember::create($insert_arr);
 
-                    FirebaseNotificationHelper::sendFCMNotification(
-                        $familyMember->device_token,
-                        'New Family Member Request',
-                        @$user->first_name.' '.@$user->last_name.' wants to add you as family member.',
-                        [
-                            'click_action' => 'accept_reject_family_member',
-                            'id' => $memberData->id,
-                            'status' => 'Pending'
-                        ]
-                    );
+                    // Send FCM notification if device token exists
+                    if (!empty($familyMember->device_token)) {
+                        try {
+                            FirebaseNotificationHelper::sendFCMNotification(
+                                $familyMember->device_token,
+                                'New Family Member Request',
+                                trim($user->first_name . ' ' . $user->last_name) . ' wants to add you as family member.',
+                                [
+                                    'click_action' => 'accept_reject_family_member',
+                                    'id' => (string)$memberData->id,
+                                    'status' => 'Pending'
+                                ]
+                            );
+                        } catch (\Exception $e) {
+                            Log::error('FCM Notification Error in addFamilyMember: ' . $e->getMessage());
+                        }
+                    }
 
+                    // Create database notification
                     Notification::create([
                         'user_id' => $familyMember->id,
                         'notificaiton_type' => 'event',
                         'entity_type' => 'Accept / Reject',
                         'entity_id' => $memberData->id,
-                        'message' => $user->first_name.' '.$user->last_name.' has requested you to connect as family member.',
+                        'message' => trim($user->first_name . ' ' . $user->last_name) . ' has requested you to connect as family member.',
                         'title' => 'Family Member Request',
                         'is_read' => 0,
                     ]);
@@ -135,7 +143,9 @@ class FamilyMemberController extends Controller
         try{
             $user = auth()->user();
 
-            $familyMember = FamilyMember::where('id', $request->id)->first();
+            $familyMember = FamilyMember::where('id', $request->id)
+                ->where('user_id', $user->id) // Ensure the user is the one who received the request
+                ->first();
 
             $msg = 'Family member request expired.';
 
@@ -144,6 +154,44 @@ class FamilyMemberController extends Controller
                 $familyMember->save();
 
                 $msg = $request->decision == 1 ? 'Family member accepted.' : 'Family member rejected.';
+
+                // Get the requester (person who sent the request)
+                $requester = User::find($familyMember->added_by);
+
+                if ($requester) {
+                    $decisionText = $request->decision == 1 ? 'accepted' : 'rejected';
+                    $notificationTitle = $request->decision == 1 ? 'Family Member Accepted' : 'Family Member Rejected';
+                    $notificationMessage = trim($user->first_name . ' ' . $user->last_name) . ' has ' . $decisionText . ' your family member request.';
+
+                    // Send FCM notification to requester if device token exists
+                    if (!empty($requester->device_token)) {
+                        try {
+                            FirebaseNotificationHelper::sendFCMNotification(
+                                $requester->device_token,
+                                $notificationTitle,
+                                $notificationMessage,
+                                [
+                                    'click_action' => 'family_member_status',
+                                    'id' => (string)$familyMember->id,
+                                    'status' => $request->decision == 1 ? 'Accepted' : 'Rejected'
+                                ]
+                            );
+                        } catch (\Exception $e) {
+                            Log::error('FCM Notification Error in acceptRejectFamilyMember: ' . $e->getMessage());
+                        }
+                    }
+
+                    // Create database notification for requester
+                    Notification::create([
+                        'user_id' => $requester->id,
+                        'notificaiton_type' => 'event',
+                        'entity_type' => 'Family Member Status',
+                        'entity_id' => $familyMember->id,
+                        'message' => $notificationMessage,
+                        'title' => $notificationTitle,
+                        'is_read' => 0,
+                    ]);
+                }
             }
 
             return response()->json([

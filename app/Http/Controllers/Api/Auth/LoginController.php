@@ -26,6 +26,7 @@ class LoginController extends Controller
         $request->validate([
             'phone_number' => 'required|numeric',
             'is_verified' => 'required|numeric',
+            'device_token' => 'nullable|string',
         ]);
 
         try{
@@ -36,6 +37,12 @@ class LoginController extends Controller
 
             if ($user) {
                 if ($request->is_verified == 1 && $user->is_verified == 1) {
+                    // Check and update device_token if provided and different
+                    if ($request->has('device_token') && $request->device_token !== $user->device_token) {
+                        $user->device_token = $request->device_token;
+                        $user->save();
+                    }
+                    
                     $data['token'] = $user->createToken('UserApp')->accessToken;
                     $data['user'] = $user;
 
@@ -121,8 +128,12 @@ class LoginController extends Controller
             'address' => 'nullable',
             'city' => 'nullable',
             'state' => 'nullable',
+            'district' => 'nullable|string|max:250',
+            'village' => 'nullable|string|max:250',
             'country' => 'nullable',
             'zipcode' => 'nullable',
+            'device_type' => 'nullable|string',
+            'device_token' => 'nullable|string',
         ];
 
         $messages =  [
@@ -152,6 +163,8 @@ class LoginController extends Controller
             // $data['password'] = Hash::make($request->password);
             $data['device_type'] = isset($request->device_type) ? $request->device_type : null;
             $data['device_token'] = isset($request->device_token) ? $request->device_token : null;
+            $data['district'] = isset($request->district) ? $request->district : null;
+            $data['village'] = isset($request->village) ? $request->village : null;
             $data['is_verified'] = 1;
 
             $user = User::create($data);

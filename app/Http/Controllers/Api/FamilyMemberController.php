@@ -24,12 +24,40 @@ class FamilyMemberController extends Controller
         try{
             $user = auth()->user();
 
-            $childFamilyMembers = FamilyMember::where('added_by',$user->id)->with('getFamilyMemberUser')->get();
+            // These are requests where user_id = current user and status = 0 (pending)
+            $pendingRequests = FamilyMember::where('user_id', $user->id)
+                ->where('status', 0)
+                ->with('getUser') // Loads the user who sent the request (added_by)
+                ->orderBy('created_at', 'DESC')
+                ->get();
 
-            $parentFamilyMembers = FamilyMember::where('user_id', $user->id)->with('getUser')->get();
+            // People who added current user (user_id = current user)
+            $acceptedReceived = FamilyMember::where('user_id', $user->id)
+                ->where('status', 1)
+                ->with('getUser') // Loads the user who added current user
+                ->get();
 
-            $familyMembers = $childFamilyMembers->merge($parentFamilyMembers);
-            $data['familyMembers'] = $familyMembers->values();
+            // People current user added (added_by = current user)
+            $acceptedSent = FamilyMember::where('added_by', $user->id)
+                ->where('status', 1)
+                ->with('getFamilyMemberUser') // Loads the user who was added by current user
+                ->get();
+
+            // Pending requests sent by current user (status = 0, added_by = current user)
+            $sentPendingRequests = FamilyMember::where('added_by', $user->id)
+                ->where('status', 0)
+                ->with('getFamilyMemberUser') // Loads the user who was requested to be added
+                ->orderBy('created_at', 'DESC')
+                ->get();
+
+            // Merge all accepted family members
+            $acceptedFamilyMembers = $acceptedReceived->merge($acceptedSent);
+
+            $data = [
+                'pendingRequests' => $pendingRequests->values(), // These show Accept/Reject buttons on frontend
+                'acceptedFamilyMembers' => $acceptedFamilyMembers->values(),
+                'sentPendingRequests' => $sentPendingRequests->values(), // Requests user sent that are pending
+            ];
 
             return response()->json([
                 'success' => true,

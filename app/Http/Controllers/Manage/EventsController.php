@@ -9,6 +9,10 @@ use App\Models\Events;
 use App\Models\Organizer;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Notification;
+use App\Helpers\FirebaseNotificationHelper;
+use Illuminate\Support\Facades\Log;
 
 class EventsController extends Controller
 {
@@ -138,7 +142,59 @@ class EventsController extends Controller
     $data['end_date'] = $request->end_date != '' ? Carbon::parse($request->end_date)->format("Y-m-d") : null;
     $data['organizers'] = implode(',',$request->organizers);
 
-    Events::create($data);
+    $event = Events::create($data);
+
+    // Send notifications to all registered users when event is created and status is active
+    if ($event->status == 1) {
+        try {
+            // Get all registered users (status=1 and is_verified=1)
+            $registeredUsers = User::withoutSystemAdmin()
+                ->where('status', 1)
+                ->where('is_verified', 1)
+                ->get();
+
+            $notificationTitle = 'New Event';
+            $notificationMessage = 'A new event "' . $event->title . '" has been added.';
+
+            foreach ($registeredUsers as $user) {
+                // Send FCM notification if device token exists
+                if (!empty($user->device_token)) {
+                    try {
+                        FirebaseNotificationHelper::sendFCMNotification(
+                            $user->device_token,
+                            $notificationTitle,
+                            $notificationMessage,
+                            [
+                                'click_action' => 'event_detail',
+                                'event_id' => (string)$event->id,
+                                'type' => 'event'
+                            ]
+                        );
+                    } catch (\Exception $e) {
+                        Log::error('FCM Notification Error for User ' . $user->id . ' (Event ID: ' . $event->id . '): ' . $e->getMessage());
+                    }
+                }
+
+                // Create database notification for ALL registered users (even without device token)
+                try {
+                    Notification::create([
+                        'user_id' => $user->id,
+                        'notificaiton_type' => 'event',
+                        'entity_type' => 'Event',
+                        'entity_id' => $event->id,
+                        'message' => $notificationMessage,
+                        'title' => $notificationTitle,
+                        'is_read' => 0,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Database Notification Error for User ' . $user->id . ' (Event ID: ' . $event->id . '): ' . $e->getMessage());
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Error sending event notifications for Event ID ' . $event->id . ': ' . $e->getMessage());
+            // Don't fail the event creation if notification fails
+        }
+    }
 
     return redirect()->route('manage.events')->with('success', 'Event added successfully!');
   }
@@ -226,7 +282,60 @@ class EventsController extends Controller
     $data['end_date'] = $request->end_date != '' ? Carbon::parse($request->end_date)->format("Y-m-d") : null;
     $data['organizers'] = implode(',',$request->organizers);
 
+    $oldStatus = $event->status;
     $event->update($data);
+
+    // Send notifications if event status changed from inactive to active (published)
+    if ($oldStatus == 0 && $event->status == 1) {
+        try {
+            // Get all registered users (status=1 and is_verified=1)
+            $registeredUsers = User::withoutSystemAdmin()
+                ->where('status', 1)
+                ->where('is_verified', 1)
+                ->get();
+
+            $notificationTitle = 'New Event';
+            $notificationMessage = 'A new event "' . $event->title . '" has been added.';
+
+            foreach ($registeredUsers as $user) {
+                // Send FCM notification if device token exists
+                if (!empty($user->device_token)) {
+                    try {
+                        FirebaseNotificationHelper::sendFCMNotification(
+                            $user->device_token,
+                            $notificationTitle,
+                            $notificationMessage,
+                            [
+                                'click_action' => 'event_detail',
+                                'event_id' => (string)$event->id,
+                                'type' => 'event'
+                            ]
+                        );
+                    } catch (\Exception $e) {
+                        Log::error('FCM Notification Error for User ' . $user->id . ' (Event ID: ' . $event->id . ' - Update): ' . $e->getMessage());
+                    }
+                }
+
+                // Create database notification for ALL registered users (even without device token)
+                try {
+                    Notification::create([
+                        'user_id' => $user->id,
+                        'notificaiton_type' => 'event',
+                        'entity_type' => 'Event',
+                        'entity_id' => $event->id,
+                        'message' => $notificationMessage,
+                        'title' => $notificationTitle,
+                        'is_read' => 0,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Database Notification Error for User ' . $user->id . ' (Event ID: ' . $event->id . ' - Update): ' . $e->getMessage());
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Error sending event notifications on update for Event ID ' . $event->id . ': ' . $e->getMessage());
+            // Don't fail the event update if notification fails
+        }
+    }
 
     return redirect()->route('manage.events')->with('success', 'Event updated successfully!');
   }

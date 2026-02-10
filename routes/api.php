@@ -45,6 +45,7 @@ Route::post('add-village', [LoginController::class, 'addVillage'])->name('add-vi
 Route::middleware('auth:api')->group(function () {
     Route::get('master', [MasterController::class, 'index'])->name('master');
     Route::get('user-profile', [MasterController::class, 'userProfile'])->name('user-profile');
+    Route::post('update-profile', [MasterController::class, 'updateProfile'])->name('update-profile');
 
     Route::get('notification-count', [NotificationController::class, 'notificationCount'])->name('notification-count');
     Route::get('notifications', [NotificationController::class, 'notifications'])->name('notifications');

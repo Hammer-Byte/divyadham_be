@@ -35,56 +35,109 @@
 
             <!-- TAB 1 -->
             <div class="tab-content active" id="upcoming">
-                <div class="event-item">
-                    <div class="thumb">
-                        <img src="{{ asset('images/event_1.png') }}" alt="Event Thumbnail" width="100%" height="100%" />
+                @if(isset($upcomingEvents) && $upcomingEvents->count() > 0)
+                    @foreach($upcomingEvents as $event)
+                    <div class="event-item">
+                        <div class="thumb">
+                            @if($event->event_image_full_url)
+                                <img src="{{ $event->event_image_full_url }}" alt="{{ $event->title }}" width="100%" height="100%" />
+                            @endif
+                        </div>
+                        <div class="info">
+                            <div class="date">
+                                @if($event->start_date)
+                                    {{ \Carbon\Carbon::parse($event->start_date)->format('d.m.Y | h:i A') }}
+                                    @if($event->end_date)
+                                        - {{ \Carbon\Carbon::parse($event->end_date)->format('d.m.Y | h:i A') }}
+                                    @endif
+                                @endif
+                            </div>
+                            <h3>{{ $event->title }}</h3>
+                            <p>{{ $event->description ?? '' }}</p>
+                            @if($event->location)
+                                <p><strong>Location:</strong> {{ $event->location }}</p>
+                            @endif
+                        </div>
                     </div>
-                    <div class="info">
-                        <div class="date">14.10.2025 | 09:00 AM</div>
-                        <h3>Event 1</h3>
-                        <p>
-                            A grand temple of Maa Bhagwati is being constructed on the sacred land of Valardi village,
-                            11 km from Babra in Amreli district, Gujarat, for the welfare of all living beings. The
-                            temple will cover 60,000 sq. ft, adorned with 111,000 cubic ft of white marble stone.
-                        </p>
+                    @endforeach
+                @else
+                    <div class="event-item">
+                        <div class="info">
+                            <p>No upcoming events scheduled.</p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="event-item">
-                    <div class="thumb"></div>
-                    <div class="info">
-                        <div class="date">14.10.2025 | 09:00 AM</div>
-                        <h3>Event 2</h3>
-                        <p>
-                            A grand temple of Maa Bhagwati is being constructed on the sacred land of Valardi village,
-                            11 km from Babra in Amreli district, Gujarat, for the welfare of all living beings. The
-                            temple will cover 60,000 sq. ft, adorned with 111,000 cubic ft of white marble stone. </p>
-                    </div>
-                </div>
+                @endif
             </div>
 
             <!-- TAB 2 -->
             <div class="tab-content" id="ongoing">
-                <div class="event-item">
-                    <div class="thumb"></div>
-                    <div class="info">
-                        <div class="date">Today</div>
-                        <h3>Live Darshan</h3>
-                        <p>Watch ongoing temple activities and aarti.</p>
+                @if(isset($ongoingEvents) && $ongoingEvents->count() > 0)
+                    @foreach($ongoingEvents as $event)
+                    <div class="event-item">
+                        <div class="thumb">
+                            @if($event->event_image_full_url)
+                                <img src="{{ $event->event_image_full_url }}" alt="{{ $event->title }}" width="100%" height="100%" />
+                            @endif
+                        </div>
+                        <div class="info">
+                            <div class="date">
+                                @if($event->start_date)
+                                    {{ \Carbon\Carbon::parse($event->start_date)->format('d.m.Y | h:i A') }}
+                                    @if($event->end_date)
+                                        - {{ \Carbon\Carbon::parse($event->end_date)->format('d.m.Y | h:i A') }}
+                                    @endif
+                                @endif
+                            </div>
+                            <h3>{{ $event->title }}</h3>
+                            <p>{{ $event->description ?? '' }}</p>
+                            @if($event->location)
+                                <p><strong>Location:</strong> {{ $event->location }}</p>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                    @endforeach
+                @else
+                    <div class="event-item">
+                        <div class="info">
+                            <p>No ongoing events at the moment.</p>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <!-- TAB 3 -->
             <div class="tab-content" id="previous">
-                <div class="event-item">
-                    <div class="thumb"></div>
-                    <div class="info">
-                        <div class="date">Completed</div>
-                        <h3>Navratri Mahotsav</h3>
-                        <p>Thank you for joining the grand celebration.</p>
+                @if(isset($previousEvents) && $previousEvents->count() > 0)
+                    @foreach($previousEvents as $event)
+                    <div class="event-item">
+                        <div class="thumb">
+                            @if($event->event_image_full_url)
+                                <img src="{{ $event->event_image_full_url }}" alt="{{ $event->title }}" width="100%" height="100%" />
+                            @endif
+                        </div>
+                        <div class="info">
+                            <div class="date">
+                                @if($event->end_date)
+                                    {{ \Carbon\Carbon::parse($event->end_date)->format('d.m.Y | h:i A') }}
+                                @elseif($event->start_date)
+                                    {{ \Carbon\Carbon::parse($event->start_date)->format('d.m.Y | h:i A') }}
+                                @endif
+                            </div>
+                            <h3>{{ $event->title }}</h3>
+                            <p>{{ $event->description ?? '' }}</p>
+                            @if($event->location)
+                                <p><strong>Location:</strong> {{ $event->location }}</p>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                    @endforeach
+                @else
+                    <div class="event-item">
+                        <div class="info">
+                            <p>No previous events found.</p>
+                        </div>
+                    </div>
+                @endif
             </div>
 
         </div>
@@ -95,18 +148,19 @@
             <h2>Events Photo Gallery</h2>
             <div class="divine-slider swiper">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
+                    @if(isset($galleryEvents) && $galleryEvents->count() > 0)
+                        @foreach($galleryEvents as $event)
+                            @if($event->event_image_full_url)
+                            <div class="swiper-slide">
+                                <img src="{{ $event->event_image_full_url }}" alt="{{ $event->title }}">
+                            </div>
+                            @endif
+                        @endforeach
+                    @else
+                        <div class="swiper-slide">
+                            <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -121,7 +175,7 @@
         const swiper = new Swiper(".divine-slider", {
             slidesPerView: 3,
             spaceBetween: 20,
-            loop: true,
+            loop: @json(isset($galleryEvents) && $galleryEvents->count() > 3),
 
             autoplay: {
                 delay: 1000,

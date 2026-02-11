@@ -52,78 +52,32 @@
                         </thead>
 
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Offering "Thal" to Mataji (One time)</td>
-                                <td class="amt">₹ 551/-</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Offering "Thal" to Mataji (Two times)</td>
-                                <td class="amt">₹ 1,100/-</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Offering "Thal" to Mataji (For one month)</td>
-                                <td class="amt">₹ 21,000/-</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Oil for "Akhand Jyot" (For one day)</td>
-                                <td class="amt">₹ 551/-</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Oil for "Akhand Jyot" (For one month)</td>
-                                <td class="amt">₹ 11,000/-</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>Oil for "Akhand Jyot" (For one year)</td>
-                                <td class="amt">₹ 51,000/-</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td>Cooking/Kitchen Seva (One time)</td>
-                                <td class="amt">₹ 5,100/-</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>Cooking/Kitchen Seva (For one day)</td>
-                                <td class="amt">₹ 11,000/-</td>
-                            </tr>
-                            <tr>
-                                <td>9</td>
-                                <td>Cooking/Kitchen Seva (For one month)</td>
-                                <td class="amt">₹ 1,51,000/-</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                                <td>Hoisting the Flag (Dhaja) for Dada</td>
-                                <td class="amt">₹ 2,500/-</td>
-                            </tr>
-                            <tr>
-                                <td>11</td>
-                                <td>Hoisting the Flag (Dhaja) for Mataji</td>
-                                <td class="amt">₹ 3,000/-</td>
-                            </tr>
+                            @if(isset($donations) && $donations->count() > 0)
+                                @foreach($donations as $index => $donation)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $donation->donationCampaign ? $donation->donationCampaign->title : 'N/A' }}</td>
+                                    <td class="amt">{{ $donation->currency ?? '₹' }}{{ number_format($donation->amount, 2) }}</td>
+                                </tr>
+                                @endforeach
+                            @endif
 
                             <!-- Important Instructions -->
                             <tr class="important-title">
                                 <td colspan="3">Important Instructions</td>
                             </tr>
                             <tr>
-                                <td>12</td>
+                                <td>{{ isset($donations) && $donations->count() > 0 ? $donations->count() + 1 : 12 }}</td>
                                 <td>The flag (Dhaja) must be obtained from the temple's office.</td>
                                 <td class="amt">-</td>
                             </tr>
                             <tr>
-                                <td>13</td>
+                                <td>{{ isset($donations) && $donations->count() > 0 ? $donations->count() + 2 : 13 }}</td>
                                 <td>To hoist the flag, an offering of "Thal" to Mataji is mandatory.</td>
                                 <td class="amt">-</td>
                             </tr>
                             <tr>
-                                <td>14</td>
+                                <td>{{ isset($donations) && $donations->count() > 0 ? $donations->count() + 3 : 14 }}</td>
                                 <td>Registration is required to hoist the flag. Mobile: 97236 82345</td>
                                 <td class="amt">-</td>
                             </tr>

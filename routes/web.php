@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PagesController; 
+use App\Http\Controllers\Api\PagesController;
+use App\Models\Donations;
+use App\Models\Events;
+use Carbon\Carbon; 
 
 Route::get('/welcome', function () {
     return view('welcome');
@@ -24,11 +27,46 @@ Route::get('/history', function () {
 })->name('history');
 
 Route::get('/events', function () {
-    return view('events');
+    $now = Carbon::now();
+    
+    // Upcoming Events: start_date is in the future
+    $upcomingEvents = Events::where('status', 1)
+        ->where('start_date', '>', $now)
+        ->orderBy('start_date', 'asc')
+        ->get();
+    
+    // Ongoing Events: current date is between start_date and end_date
+    $ongoingEvents = Events::where('status', 1)
+        ->where('start_date', '<=', $now)
+        ->where(function($query) use ($now) {
+            $query->where('end_date', '>=', $now)
+                  ->orWhereNull('end_date');
+        })
+        ->orderBy('start_date', 'desc')
+        ->get();
+    
+    // Previous Events: end_date is in the past
+    $previousEvents = Events::where('status', 1)
+        ->whereNotNull('end_date')
+        ->where('end_date', '<', $now)
+        ->orderBy('end_date', 'desc')
+        ->get();
+    
+    // Events for Photo Gallery: All active events with event images
+    $galleryEvents = Events::where('status', 1)
+        ->whereNotNull('event_image_url')
+        ->orderBy('start_date', 'desc')
+        ->get();
+    
+    return view('events', compact('upcomingEvents', 'ongoingEvents', 'previousEvents', 'galleryEvents'));
 })->name('events');
 
 Route::get('/donation', function () {
-    return view('donation');
+    $donations = Donations::with(['donationCampaign', 'user'])
+        ->orderBy('donation_date', 'desc')
+        ->get();
+    
+    return view('donation', compact('donations'));
 })->name('donation');
 
 Route::get('/photo-gallery', function () {

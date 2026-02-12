@@ -1,0 +1,253 @@
+/* Banner */
+.page-banner {
+    background: #8F0D06;
+    padding: 90px 10px 140px 10px;
+    text-align: center;
+    position: relative;
+    margin-top: 144px;
+}
+
+/* golden border style */
+.page-banner .banner-image {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    height: 60px;
+    width: 100%;
+}
+
+.page-banner h2 {
+    font-size: 50px;
+    line-height: 50px;
+    font-weight: 400;
+    color: #F8C500;
+}
+
+.divine-contain {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    z-index: 1;
+}
+
+.divine-contain img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 40px;
+}
+
+.photo-gallery {
+    padding: 40px 0 80px;
+}
+
+.tabs {
+    display: flex;
+    gap: 40px;
+    border-bottom: 1px solid #8F0D06;
+    margin: 30px 0;
+}
+
+.tab {
+    background: none;
+    border: none;
+    font-size: 32px;
+    line-height: 40px;
+    font-family: Arapey;
+    font-weight: 400;
+    padding: 20px 0;
+    cursor: pointer;
+    color: #ED7B1B;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.tab.active {
+    font-weight: 400;
+    color: #970505;
+}
+
+.tab.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 3px;
+    width: 100%;
+    background: #8F0D06;
+}
+
+/* Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.gallery-grid {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    border-radius: 30px;
+}
+
+/* Event Item */
+.gallery-item {
+    width: 100%;
+    height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+
+    .page-banner h2 {
+        font-size: 42px;
+    }
+
+    .tab {
+        font-size: 26px;
+    }
+
+    .gallery-item {
+        height: 260px;
+    }
+
+}
+
+@media (max-width: 992px) {
+
+    /* banner */
+    .page-banner {
+        padding: 70px 10px 110px;
+        margin-top: 144px;
+    }
+
+    .page-banner h2 {
+        font-size: 32px;
+        line-height: 38px;
+    }
+
+    .page-banner .banner-image {
+        height: 40px;
+    }
+
+    /* divine */
+    .divine-contain {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    /* tabs */
+    .tabs {
+        gap: 25px;
+        margin: 0 0 30px 0;
+    }
+
+    .tab {
+        font-size: 22px;
+        padding: 15px 0;
+    }
+
+    /* gallery */
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .gallery-item {
+        height: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* banner */
+    .page-banner {
+        padding: 50px 10px 80px;
+        margin-top: 144px;
+    }
+
+    .page-banner h2 {
+        font-size: 22px;
+        line-height: 28px;
+    }
+
+    .page-banner .banner-image {
+        height: 40px;
+    }
+
+    /* divine */
+    .divine-contain {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* tabs scroll but hidden scrollbar */
+    .tabs {
+        gap: 20px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        margin: 0 0 30px 0;
+    }
+
+    .tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab {
+        font-size: 18px;
+        padding: 10px 0;
+        flex: 0 0 auto;
+    }
+
+    /* gallery */
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .gallery-item {
+        height: 200px;
+    }
+
+    .gallery-item img {
+        height: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-banner {
+        padding: 40px 10px 70px;
+        margin-top: 104px;
+    }
+
+    .page-banner .banner-image {
+        height: 20px;
+    }
+
+    .page-banner h2 {
+        font-size: 18px;
+    }
+
+    .tabs {
+        margin: 0 0 30px 0;
+    }
+
+    .tab {
+        font-size: 16px;
+    }
+
+    .gallery-item {
+        height: 180px;
+    }
+
+    .gallery-item img {
+        height: 100%;
+    }
+}

@@ -1,0 +1,274 @@
+.page-banner {
+    background: #8F0D06;
+    padding: 90px 10px 140px 10px;
+    text-align: center;
+    position: relative;
+    margin-top: 144px;
+}
+
+.page-banner .banner-image {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    height: 60px;
+    width: 100%;
+}
+
+.page-banner h2 {
+    font-size: 50px;
+    line-height: 50px;
+    font-weight: 400;
+    color: #F8C500;
+}
+
+.static-section {
+    padding: 70px 0;
+}
+
+.static-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 60px;
+}
+
+.static-info {
+    max-width: 100%;
+}
+
+.static-info h3 {
+    font-size: 46px;
+    line-height: 50px;
+    font-weight: 400;
+    color: #970505;
+    margin-bottom: 50px;
+}
+
+.static-info .last-updated {
+    margin-bottom: 30px;
+    color: #666;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.static-info .last-updated strong {
+    font-weight: 700;
+}
+
+.static-info .intro-box {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-left: 4px solid #970505;
+    margin-bottom: 30px;
+    border-radius: 4px;
+}
+
+.static-info .intro-box p {
+    margin: 0;
+    line-height: 28px;
+    color: #333;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.static-info .content-wrapper {
+    line-height: 28px;
+    color: #333;
+}
+
+.static-info .content-wrapper h4 {
+    margin-top: 40px;
+    margin-bottom: 15px;
+    color: #970505;
+    font-size: 24px;
+    font-weight: 400;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 8px;
+}
+
+.static-info .content-wrapper p {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.static-info .content-wrapper ul {
+    margin-left: 25px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #333;
+}
+
+.static-info .content-wrapper ul li {
+    margin-bottom: 8px;
+}
+
+.static-info .content-wrapper strong {
+    font-weight: 700;
+}
+
+.static-info .content-wrapper .note-box {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 20px;
+    margin-top: 40px;
+    border-radius: 4px;
+}
+
+.static-info .content-wrapper .note-box p {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+    color: #856404;
+}
+
+.static-info .content-wrapper .note-box strong {
+    font-weight: 700;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .static-content {
+        gap: 40px;
+    }
+
+    .static-info h3 {
+        font-size: 38px;
+        line-height: 42px;
+        margin-bottom: 35px;
+    }
+}
+
+@media (max-width: 992px) {
+    .page-banner .banner-image {
+        height: 40px;
+    }
+
+    .static-section {
+        padding: 70px 0;
+    }
+
+    .static-content {
+        gap: 40px;
+    }
+
+    .static-info h3 {
+        font-size: 32px;
+        line-height: 36px;
+        margin-bottom: 25px;
+    }
+
+    .static-info .last-updated {
+        font-size: 16px;
+    }
+
+    .static-info .intro-box p,
+    .static-info .content-wrapper p,
+    .static-info .content-wrapper ul {
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    .static-info .content-wrapper h4 {
+        font-size: 20px;
+    }
+
+    .static-info .content-wrapper .note-box p {
+        font-size: 16px;
+        line-height: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-banner {
+        padding: 60px 10px 90px;
+        margin-top: 144px;
+    }
+
+    .page-banner h2 {
+        font-size: 26px;
+        line-height: 30px;
+    }
+
+    .page-banner .banner-image {
+        height: 40px;
+    }
+
+    .static-section {
+        padding: 50px 0;
+    }
+
+    .static-info h3 {
+        font-size: 24px;
+        line-height: 28px;
+    }
+
+    .static-info .last-updated {
+        font-size: 15px;
+    }
+
+    .static-info .intro-box p,
+    .static-info .content-wrapper p,
+    .static-info .content-wrapper ul {
+        font-size: 15px;
+        line-height: 22px;
+    }
+
+    .static-info .content-wrapper h4 {
+        font-size: 18px;
+    }
+
+    .static-info .content-wrapper .note-box p {
+        font-size: 15px;
+        line-height: 22px;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-banner {
+        padding: 40px 10px 70px;
+        margin-top: 104px;
+    }
+
+    .page-banner .banner-image {
+        height: 20px;
+    }
+
+    .page-banner h2 {
+        font-size: 20px;
+    }
+
+    .static-section {
+        padding: 40px 0;
+    }
+
+    .static-info h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .static-info .last-updated {
+        font-size: 14px;
+    }
+
+    .static-info .intro-box p,
+    .static-info .content-wrapper p,
+    .static-info .content-wrapper ul {
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .static-info .content-wrapper h4 {
+        font-size: 16px;
+    }
+
+    .static-info .content-wrapper .note-box p {
+        font-size: 14px;
+        line-height: 20px;
+    }
+}
+

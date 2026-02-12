@@ -14,6 +14,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification;
+use App\Models\Post;
+use App\Models\FamilyMember;
 
 class NotificationController extends Controller
 {
@@ -57,8 +59,38 @@ class NotificationController extends Controller
                 $notifications = $notifications->where('is_read', 0);
             }
 
-            $data['notifications'] = $notifications->paginate(20);
+            $notifications = $notifications->orderBy('created_at', 'DESC')->paginate(20);
 
+            // Add sender profile image URL to each notification
+            $notifications->getCollection()->transform(function ($notification) {
+                $senderUser = null;
+
+                // Get sender user based on entity_type
+                if ($notification->entity_type == 'Post' && $notification->entity_id > 0) {
+                    $post = Post::find($notification->entity_id);
+                    if ($post && $post->user_id) {
+                        $senderUser = User::find($post->user_id);
+                    }
+                } elseif (in_array($notification->entity_type, ['Accept / Reject', 'Family Member Status']) && $notification->entity_id > 0) {
+                    $familyMember = FamilyMember::find($notification->entity_id);
+                    if ($familyMember) {
+                        $senderUserId = $notification->entity_type == 'Accept / Reject' 
+                            ? $familyMember->added_by 
+                            : $familyMember->user_id;
+                        if ($senderUserId) {
+                            $senderUser = User::find($senderUserId);
+                        }
+                    }
+                }
+
+                // Add profile image URL to notification
+                $notification->profile_image_url = $senderUser ? $senderUser->profile_image_url : null;
+                
+                return $notification;
+            });
+
+            $data['notifications'] = $notifications;
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Api called successfully',

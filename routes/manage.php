@@ -24,6 +24,7 @@ use App\Http\Controllers\Manage\PublicDocumentsController;
 use App\Http\Controllers\Manage\GalleryController;
 use App\Http\Controllers\Manage\GalleryMediaController;
 use App\Http\Controllers\Manage\PagesController;
+use App\Http\Controllers\Manage\CustomNotificationController;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -539,6 +540,10 @@ Route::middleware(["web"])->group(function () {
         Route::post("page/update", [PagesController::class, "update"])->name(
             "pageUpdate"
         );
+
+        //Custom Notification
+        Route::get("custom-notification", [CustomNotificationController::class, "index"])->name("customNotification");
+        Route::post("custom-notification/send", [CustomNotificationController::class, "send"])->name("customNotificationSend");
 
         Route::get("logout", [LoginController::class, "logout"])->name(
             "logout"

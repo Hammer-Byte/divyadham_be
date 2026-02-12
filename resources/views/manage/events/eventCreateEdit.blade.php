@@ -110,6 +110,9 @@
                                 <option {{$selectedStatus == '1' ? 'selected' : ''}} value="1">Active</option>
                                 <option {{$selectedStatus == '0' ? 'selected' : ''}} value="0">Inactive</option>
                             </select>
+                            <small class="text-muted d-block mt-1">
+                                <i class="bx bx-info-circle"></i> Selecting "Active" will automatically send notifications to all registered users.
+                            </small>
                         </div>
                     </div>
                 </div>

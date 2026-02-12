@@ -40,10 +40,12 @@ Route::post('verify-otp', [LoginController::class, 'verifyOTP'])->name('verifyOT
 Route::get('get-states', [LoginController::class, 'getStates'])->name('get-states');
 Route::post('get-districts', [LoginController::class, 'getDistricts'])->name('get-districts');
 Route::post('get-villages-by-state-and-district', [LoginController::class, 'getVillagesByStateAndDistrict'])->name('get-villages-by-state-and-district');
+Route::post('add-village', [LoginController::class, 'addVillage'])->name('add-village');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('master', [MasterController::class, 'index'])->name('master');
     Route::get('user-profile', [MasterController::class, 'userProfile'])->name('user-profile');
+    Route::post('update-profile', [MasterController::class, 'updateProfile'])->name('update-profile');
 
     Route::get('notification-count', [NotificationController::class, 'notificationCount'])->name('notification-count');
     Route::get('notifications', [NotificationController::class, 'notifications'])->name('notifications');

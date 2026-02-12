@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('address', length: 250)->nullable();
             $table->string('city', length: 50)->nullable();
             $table->string('state', length: 50)->nullable();
+            $table->string('district', length: 250)->nullable();
+            $table->string('village', length: 250)->nullable();
             $table->string('country', length: 50)->nullable();
             $table->string('zipcode', length: 50)->nullable();
             $table->tinyInteger('status')->default(0);

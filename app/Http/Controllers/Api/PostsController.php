@@ -17,6 +17,8 @@ use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\PostComment;
 use App\Models\BlockedUser;
+use App\Models\Notification;
+use App\Helpers\FirebaseNotificationHelper;
 
 class PostsController extends Controller
 {
@@ -138,20 +140,40 @@ class PostsController extends Controller
                 ->where('user_id', $request->user_id)
                 ->first();
 
+            // Get the post to find the owner
+            $post = Post::find($request->post_id);
+            
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found.',
+                    'data' => (object) [],
+                    'error' => 'Post not found',
+                ], 404);
+            }
+
+            $isNewLike = false;
+            $shouldSendNotification = false;
+
             if ($postLike) {
                 if ($postLike->trashed()) {
                     // Restore and update type to requested reaction
                     $postLike->restore();
                     $postLike->type = $reactionType;
                     $postLike->save();
+                    $isNewLike = true;
+                    $shouldSendNotification = ($reactionType === 'like' && $post->user_id != $user->id);
                 } else {
                     if ($postLike->type === $reactionType) {
                         // Toggle off - soft delete (user clicked same reaction again)
                         $postLike->delete();
+                        // Don't send notification when unliking
                     } else {
                         // Change from one reaction to another (like to dislike or vice versa)
                         $postLike->type = $reactionType;
                         $postLike->save();
+                        $isNewLike = ($reactionType === 'like');
+                        $shouldSendNotification = ($reactionType === 'like' && $post->user_id != $user->id);
                     }
                 }
             } else {
@@ -161,6 +183,49 @@ class PostsController extends Controller
                     'user_id' => $request->user_id,
                     'type' => $reactionType,
                 ]);
+                $isNewLike = true;
+                $shouldSendNotification = ($reactionType === 'like' && $post->user_id != $user->id);
+            }
+
+            // Send notification only for new likes (not dislikes) and not if user likes their own post
+            if ($shouldSendNotification) {
+                // Get the post owner
+                $postOwner = User::find($post->user_id);
+                
+                if ($postOwner) {
+                    $likerName = trim($user->first_name . ' ' . $user->last_name);
+                    $notificationTitle = 'Post Liked';
+                    $notificationMessage = $likerName . ' liked your post.';
+
+                    // Send FCM notification if device token exists
+                    if (!empty($postOwner->device_token)) {
+                        try {
+                            FirebaseNotificationHelper::sendFCMNotification(
+                                $postOwner->device_token,
+                                $notificationTitle,
+                                $notificationMessage,
+                                [
+                                    'click_action' => 'post_detail',
+                                    'post_id' => (string)$post->id,
+                                    'type' => 'like'
+                                ]
+                            );
+                        } catch (\Exception $e) {
+                            Log::error('FCM Notification Error in likePost: ' . $e->getMessage());
+                        }
+                    }
+
+                    // Create database notification
+                    Notification::create([
+                        'user_id' => $postOwner->id,
+                        'notificaiton_type' => 'like',
+                        'entity_type' => 'Post',
+                        'entity_id' => $post->id,
+                        'message' => $notificationMessage,
+                        'title' => $notificationTitle,
+                        'is_read' => 0,
+                    ]);
+                }
             }
 
             return response()->json([
@@ -191,6 +256,18 @@ class PostsController extends Controller
         try{
             $user = auth()->user();
 
+            // Get the post to find the owner
+            $post = Post::find($request->post_id);
+            
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found.',
+                    'data' => (object) [],
+                    'error' => 'Post not found',
+                ], 404);
+            }
+
             $comment = PostComment::create([
                 'post_id' => $request->post_id,
                 'user_id' => $user->id,
@@ -198,6 +275,47 @@ class PostsController extends Controller
             ]);
 
             $comment->load('getUser');
+
+            // Send notification to post owner (if not commenting on own post)
+            if ($post->user_id != $user->id) {
+                $postOwner = User::find($post->user_id);
+                
+                if ($postOwner) {
+                    $commenterName = trim($user->first_name . ' ' . $user->last_name);
+                    $notificationTitle = 'New Comment on Your Post';
+                    $notificationMessage = $commenterName . ' commented on your post.';
+
+                    // Send FCM notification if device token exists
+                    if (!empty($postOwner->device_token)) {
+                        try {
+                            FirebaseNotificationHelper::sendFCMNotification(
+                                $postOwner->device_token,
+                                $notificationTitle,
+                                $notificationMessage,
+                                [
+                                    'click_action' => 'post_detail',
+                                    'post_id' => (string)$post->id,
+                                    'type' => 'comment',
+                                    'comment_id' => (string)$comment->id
+                                ]
+                            );
+                        } catch (\Exception $e) {
+                            Log::error('FCM Notification Error in addPostComment: ' . $e->getMessage());
+                        }
+                    }
+
+                    // Create database notification
+                    Notification::create([
+                        'user_id' => $postOwner->id,
+                        'notificaiton_type' => 'comment',
+                        'entity_type' => 'Post',
+                        'entity_id' => $post->id,
+                        'message' => $notificationMessage,
+                        'title' => $notificationTitle,
+                        'is_read' => 0,
+                    ]);
+                }
+            }
 
             return response()->json([
                 'success' => true,

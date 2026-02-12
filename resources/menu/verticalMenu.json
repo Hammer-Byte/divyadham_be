@@ -207,6 +207,16 @@
             "manage.pageEdit",
             "manage.pageUpdate"
         ]
+    },
+    {
+        "name": "Custom Notification",
+        "icon": "menu-icon tf-icons fa fa-bell",
+        "slug": "manage.customNotification",
+        "url": "manage/custom-notification",
+        "accepted_routes":[
+            "manage.customNotification",
+            "manage.customNotificationSend"
+        ]
     }
   ]
 }

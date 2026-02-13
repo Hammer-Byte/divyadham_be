@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . "/../routes/console.php",
         health: "/up",
         then: function () {
-            Route::namespace("Manage")
+            Route::middleware("web")
+                ->namespace("Manage")
                 ->prefix("manage")
                 ->name("manage.")
                 ->group(base_path("routes/manage.php"));

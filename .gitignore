@@ -52,3 +52,4 @@ _ide_helper_models.php
 
 # Storage symlink
 /public/storage
+composer.lock

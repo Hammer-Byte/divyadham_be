@@ -1,7 +1,7 @@
-const { EnvironmentPlugin } = require('webpack');
-const mix = require('laravel-mix');
-const glob = require('glob');
-const path = require('path');
+const { EnvironmentPlugin } = require("webpack");
+const mix = require("laravel-mix");
+const glob = require("glob");
+const path = require("path");
 
 /*
  |--------------------------------------------------------------------------
@@ -10,9 +10,9 @@ const path = require('path');
  */
 
 mix.options({
-  resourceRoot: process.env.ASSET_URL || undefined,
-  processCssUrls: false,
-  postCss: [require('autoprefixer')]
+    resourceRoot: process.env.ASSET_URL || undefined,
+    processCssUrls: false,
+    postCss: [require("autoprefixer")],
 });
 
 /*
@@ -22,54 +22,59 @@ mix.options({
  */
 
 mix.webpackConfig({
-  output: {
-    publicPath: process.env.ASSET_URL || undefined,
-    libraryTarget: 'umd'
-  },
+    output: {
+        publicPath: process.env.ASSET_URL || undefined,
+        libraryTarget: "umd",
+    },
 
-  plugins: [
-    new EnvironmentPlugin({
-      // Application's public url
-      BASE_URL: process.env.ASSET_URL ? `${process.env.ASSET_URL}/` : '/'
-    })
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.es6$|\.js$/,
-        include: [
-          path.join(__dirname, 'node_modules/bootstrap/'),
-          path.join(__dirname, 'node_modules/popper.js/'),
-          path.join(__dirname, 'node_modules/shepherd.js/')
+    plugins: [
+        new EnvironmentPlugin({
+            // Application's public url
+            BASE_URL: process.env.ASSET_URL ? `${process.env.ASSET_URL}/` : "/",
+        }),
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.es6$|\.js$/,
+                include: [
+                    path.join(__dirname, "node_modules/bootstrap/"),
+                    path.join(__dirname, "node_modules/popper.js/"),
+                    path.join(__dirname, "node_modules/shepherd.js/"),
+                ],
+                loader: "babel-loader",
+                options: {
+                    presets: [
+                        [
+                            "@babel/preset-env",
+                            { targets: "last 2 versions, ie >= 10" },
+                        ],
+                    ],
+                    plugins: [
+                        "@babel/plugin-transform-destructuring",
+                        "@babel/plugin-proposal-object-rest-spread",
+                        "@babel/plugin-transform-template-literals",
+                    ],
+                    babelrc: false,
+                },
+            },
         ],
-        loader: 'babel-loader',
-        options: {
-          presets: [['@babel/preset-env', { targets: 'last 2 versions, ie >= 10' }]],
-          plugins: [
-            '@babel/plugin-transform-destructuring',
-            '@babel/plugin-proposal-object-rest-spread',
-            '@babel/plugin-transform-template-literals'
-          ],
-          babelrc: false
-        }
-      }
-    ]
-  },
-  externals: {
-    jquery: 'jQuery',
-    moment: 'moment',
-    jsdom: 'jsdom',
-    velocity: 'Velocity',
-    hammer: 'Hammer',
-    pace: '"pace-progress"',
-    chartist: 'Chartist',
-    'popper.js': 'Popper',
+    },
+    externals: {
+        jquery: "jQuery",
+        moment: "moment",
+        jsdom: "jsdom",
+        velocity: "Velocity",
+        hammer: "Hammer",
+        pace: '"pace-progress"',
+        chartist: "Chartist",
+        "popper.js": "Popper",
 
-    // blueimp-gallery plugin
-    './blueimp-helper': 'jQuery',
-    './blueimp-gallery': 'blueimpGallery',
-    './blueimp-gallery-video': 'blueimpGallery'
-  }
+        // blueimp-gallery plugin
+        "./blueimp-helper": "jQuery",
+        "./blueimp-gallery": "blueimpGallery",
+        "./blueimp-gallery-video": "blueimpGallery",
+    },
 });
 
 /*
@@ -79,10 +84,10 @@ mix.webpackConfig({
  */
 
 function mixAssetsDir(query, cb) {
-  (glob.sync('resources/assets/' + query) || []).forEach(f => {
-    f = f.replace(/[\\\/]+/g, '/');
-    cb(f, f.replace('resources/assets/', 'public/assets/'));
-  });
+    (glob.sync("resources/assets/" + query) || []).forEach((f) => {
+        f = f.replace(/[\\\/]+/g, "/");
+        cb(f, f.replace("resources/assets/", "public/assets/"));
+    });
 }
 
 /*
@@ -92,28 +97,42 @@ function mixAssetsDir(query, cb) {
  */
 
 const sassOptions = {
-  precision: 5
+    precision: 5,
 };
 
 // Core stylesheets
-mixAssetsDir('vendor/scss/**/!(_)*.scss', (src, dest) =>
-  mix.sass(src, dest.replace(/(\\|\/)scss(\\|\/)/, '$1css$2').replace(/\.scss$/, '.css'), { sassOptions })
+mixAssetsDir("vendor/scss/**/!(_)*.scss", (src, dest) =>
+    mix.sass(
+        src,
+        dest
+            .replace(/(\\|\/)scss(\\|\/)/, "$1css$2")
+            .replace(/\.scss$/, ".css"),
+        { sassOptions }
+    )
 );
 
 // Core javascripts
-mixAssetsDir('vendor/js/**/*.js', (src, dest) => mix.js(src, dest));
+mixAssetsDir("vendor/js/**/*.js", (src, dest) => mix.js(src, dest));
 
 // Libs
-mixAssetsDir('vendor/libs/**/*.js', (src, dest) => mix.js(src, dest));
-mixAssetsDir('vendor/libs/**/!(_)*.scss', (src, dest) =>
-  mix.sass(src, dest.replace(/\.scss$/, '.css'), { sassOptions })
+mixAssetsDir("vendor/libs/**/*.js", (src, dest) => mix.js(src, dest));
+mixAssetsDir("vendor/libs/**/!(_)*.scss", (src, dest) =>
+    mix.sass(src, dest.replace(/\.scss$/, ".css"), { sassOptions })
 );
-mixAssetsDir('vendor/libs/**/*.{png,jpg,jpeg,gif}', (src, dest) => mix.copy(src, dest));
+mixAssetsDir("vendor/libs/**/*.{png,jpg,jpeg,gif}", (src, dest) =>
+    mix.copy(src, dest)
+);
 
 // Fonts
-mixAssetsDir('vendor/fonts/*/*', (src, dest) => mix.copy(src, dest));
-mixAssetsDir('vendor/fonts/!(_)*.scss', (src, dest) =>
-  mix.sass(src, dest.replace(/(\\|\/)scss(\\|\/)/, '$1css$2').replace(/\.scss$/, '.css'), { sassOptions })
+mixAssetsDir("vendor/fonts/*/*", (src, dest) => mix.copy(src, dest));
+mixAssetsDir("vendor/fonts/!(_)*.scss", (src, dest) =>
+    mix.sass(
+        src,
+        dest
+            .replace(/(\\|\/)scss(\\|\/)/, "$1css$2")
+            .replace(/\.scss$/, ".css"),
+        { sassOptions }
+    )
 );
 
 /*
@@ -122,10 +141,15 @@ mixAssetsDir('vendor/fonts/!(_)*.scss', (src, dest) =>
  |--------------------------------------------------------------------------
  */
 
-mixAssetsDir('js/**/*.js', (src, dest) => mix.scripts(src, dest));
-mixAssetsDir('css/**/*.css', (src, dest) => mix.copy(src, dest));
+mixAssetsDir("js/**/*.js", (src, dest) => mix.scripts(src, dest));
+mixAssetsDir("css/**/*.css", (src, dest) => mix.copy(src, dest));
 
-mix.copy('node_modules/boxicons/fonts/*', 'public/assets/vendor/fonts/boxicons');
+mix.copy(
+    "node_modules/boxicons/fonts/*",
+    "public/assets/vendor/fonts/boxicons"
+);
+
+mix.copy("resources/images", "public/images");
 
 mix.version();
 
@@ -140,4 +164,4 @@ mix.version();
  | Refer official documentation for more information: https://laravel.com/docs/10.x/mix#browsersync-reloading
  */
 
-mix.browserSync('http://127.0.0.1:8000/');
+mix.browserSync("http://127.0.0.1:8000/");

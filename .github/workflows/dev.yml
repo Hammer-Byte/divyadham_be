@@ -44,21 +44,26 @@ jobs:
             find database/migrations -name "2026_*_create_oauth_*.php" -type f -delete || true
             
             echo "Installing dependencies...."
-            composer install --optimize-autoloader
-            php artisan config:clear
-            php artisan key:generate
-            php artisan storage:link
-            php artisan migrate:fresh
-            php artisan passport:keys --force
-            php artisan passport:client --personal --name="Personal Access Client" || true
-            php artisan db:seed
-
-            
+            composer install --no-dev --optimize-autoloader
             npm install --legacy-peer-deps
-            npx mix --production
+            npm run prod
 
+            # Clear old caches first
             php artisan optimize:clear
-            php artisan view:clear
+
+            # Run migrations (never fresh on production!)
+            php artisan migrate --force
+
+            # Passport keys (only if not already generated)
+            php artisan passport:keys --force
+
+            # Cache everything for performance
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            # Storage symlink
+            php artisan storage:link
 
             echo "Starting app..."
             nohup php artisan serve --env=production > /dev/null 2>&1 &

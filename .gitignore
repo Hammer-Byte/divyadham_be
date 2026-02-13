@@ -45,3 +45,10 @@ yarn-error.log
 _ide_helper.php
 _ide_helper_models.php
 .phpstorm.meta.php
+
+# Mix compiled assets
+/public/assets/
+/public/mix-manifest.json
+
+# Storage symlink
+/public/storage

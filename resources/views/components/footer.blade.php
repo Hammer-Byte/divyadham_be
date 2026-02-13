@@ -26,11 +26,16 @@
                         <li><a href="{{ route('history') }}">History</a></li>
                         <li><a>Committee</a></li>
                     </ul>
-                    <ul>
+                    <!-- <ul>
                         <li><a>How to Reach</a></li>
                         <li><a>Campus Facility</a></li>
                         <li><a>Nearby Places</a></li>
                         <li><a>Interesting Facts</a></li>
+                    </ul> -->
+                    <ul>
+                        <li><a href="{{ route('disclaimer') }}">Disclaimer</a></li>
+                        <li><a href="{{ route('privacy-policy') }}">Privacy Policy</a></li>
+                        <li><a href="{{ route('terms-and-conditions') }}">Terms and Conditions</a></li>
                     </ul>
                 </div>
             </div>

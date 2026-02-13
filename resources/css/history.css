@@ -1,0 +1,324 @@
+/* Banner */
+.page-banner {
+    background: #8F0D06;
+    padding: 90px 10px 140px 10px;
+    text-align: center;
+    position: relative;
+    margin-top: 144px;
+}
+
+/* golden border style */
+.page-banner .banner-image {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    height: 60px;
+    width: 100%;
+}
+
+.page-banner h2 {
+    font-size: 50px;
+    line-height: 50px;
+    font-weight: 400;
+    color: #F8C500;
+}
+
+/* Section */
+.about-temple {
+    padding: 100px 20px;
+    background: #fff;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* Headings */
+.about-text h2 {
+    color: #970505;
+    font-size: 32px;
+    line-height: 30px;
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+/* Paragraph */
+.about-text p {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.about-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Image */
+.about-image {
+    display: flex;
+    flex-direction: column;
+    gap: 100px;
+}
+
+.about-image img {
+    width: 100%;
+}
+
+.divine-box {
+    border: 1px solid #970505;
+    padding: 30px 50px;
+    font-size: 18px;
+    line-height: 28px;
+    color: #333;
+    font-weight: 400;
+    margin: 20px 0;
+}
+
+.divine-slider {
+    position: relative;
+    padding: 20px 0 50px;
+}
+
+.divine-slider img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.address-box {
+    margin: 50px 0;
+    padding: 30px 90px;
+    display: flex;
+    border-radius: 30px;
+    box-shadow: 5px 5px 15px 0px #00000033;
+    background-color: #fff;
+    gap: 20px;
+}
+
+.address-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.address-box ul li {
+    font-size: 18px;
+    line-height: 28px;
+    color: #000;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.divine-section {
+    position: relative;
+    background-color: #f4b400;
+    /* yellow base */
+    padding: 100px 20px;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* background pattern */
+.divine-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/images/join_p_bg.jpg") top/cover no-repeat;
+    opacity: 0.15;
+    z-index: 0;
+}
+
+.divine-section h2 {
+    font-size: 32px;
+    line-height: 30px;
+    color: #970505;
+    margin-bottom: 40px;
+    font-weight: 400;
+    font-family: Arapey;
+}
+
+.divine-contain {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    z-index: 1;
+}
+
+.divine-contain img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 40px;
+}
+
+@media (min-width: 1400px) {
+    .about-temple {
+        padding: 120px 40px;
+    }
+}
+
+@media (max-width: 1200px) {
+
+    .page-banner h2 {
+        font-size: 42px;
+    }
+
+    .about-text h2,
+    .divine-section h2 {
+        font-size: 28px;
+    }
+
+    .about-image {
+        gap: 60px;
+    }
+
+    .address-box {
+        padding: 25px 50px;
+    }
+}
+
+@media (max-width: 992px) {
+
+    /* banner */
+    .page-banner {
+        margin-top: 120px;
+        padding: 70px 10px 120px;
+    }
+
+    .page-banner h2 {
+        font-size: 34px;
+        line-height: 40px;
+    }
+
+    /* about */
+    .about-temple {
+        padding: 70px 20px;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-image {
+        gap: 40px;
+    }
+
+    /* divine box */
+    .divine-box {
+        padding: 20px 25px;
+        font-size: 16px;
+    }
+
+    /* address */
+    .address-box {
+        padding: 20px 30px;
+    }
+
+    /* gallery */
+    .divine-contain {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .divine-slider {
+        padding: 0;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* banner */
+    .page-banner {
+        margin-top: 144px;
+        padding: 40px 10px 70px;
+    }
+
+    .page-banner h2 {
+        font-size: 26px;
+        line-height: 32px;
+    }
+
+    .page-banner .banner-image {
+        height: 40px;
+    }
+
+    /* about */
+    .about-temple {
+        padding: 50px 15px;
+    }
+
+    .about-text h2 {
+        font-size: 22px;
+        line-height: 28px;
+    }
+
+    .about-text p {
+        font-size: 14px;
+        line-height: 22px;
+    }
+
+    /* temple images */
+    .about-image {
+        gap: 20px;
+    }
+
+    /* slider */
+    .divine-slider img {
+        height: 200px;
+    }
+
+    /* address */
+    .address-box {
+        flex-direction: column;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .address-box ul li {
+        font-size: 15px;
+        line-height: 24px;
+    }
+
+    /* divine section */
+    .divine-section {
+        padding: 30px 15px;
+    }
+
+    .divine-section h2 {
+        font-size: 24px;
+        line-height: 30px;
+        margin-bottom: 25px;
+    }
+
+    .divine-contain {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .page-banner h2 {
+        font-size: 20px;
+    }
+
+    .divine-box {
+        padding: 15px;
+        font-size: 14px;
+        line-height: 22px;
+    }
+
+    .page-banner .banner-image {
+        height: 40px;
+    }
+
+    .about-image img {
+        height: 280px;
+    }
+}

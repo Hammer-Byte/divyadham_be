@@ -77,5 +77,17 @@ Route::get('/contact-us', function () {
     return view('contact-us');
 })->name('contact-us');
 
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy-policy');
+
+Route::get('/terms-and-conditions', function () {
+    return view('terms-and-conditions');
+})->name('terms-and-conditions');
+
+Route::get('/disclaimer', function () {
+    return view('disclaimer');
+})->name('disclaimer');
+
 Route::get('/{slug}', [PagesController::class, 'renderPage']);
 

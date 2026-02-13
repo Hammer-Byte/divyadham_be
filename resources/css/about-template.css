@@ -1,0 +1,247 @@
+/* Banner */
+.page-banner {
+  background: #8F0D06;
+  padding: 90px 10px 140px 10px;
+  text-align: center;
+  position: relative;
+  margin-top: 144px;
+}
+
+/* golden border style */
+.page-banner .banner-image {
+  /* content: ""; */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  height: 60px;
+  width: 100%;
+}
+
+.page-banner h2 {
+  font-size: 50px;
+  line-height: 50px;
+  font-weight: 400;
+  color: #F8C500;
+}
+
+/* Section */
+.about-temple {
+  padding: 100px 20px;
+  background: #fff;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.about-second-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 30px;
+  align-items: start;
+}
+
+/* Headings */
+.about-text h2 {
+  color: #970505;
+  font-size: 32px;
+  line-height: 30px;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+/* Paragraph */
+.about-text p {
+  font-size: 16px;
+  line-height: 28px;
+  font-weight: 400;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.about-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Image */
+.about-image img {
+  width: 100%;
+}
+
+.temple-image {
+  width: 100%;
+  height: 230px;
+  background: url("/images/temple.png") center/cover no-repeat;
+}
+
+.divine-section {
+  position: relative;
+  background-color: #f4b400;
+  /* yellow base */
+  padding: 100px 20px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* background pattern */
+.divine-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/images/join_p_bg.jpg") top/cover no-repeat;
+  opacity: 0.15;
+  z-index: 0;
+}
+
+.divine-container {
+  max-width: 800px;
+  margin: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.divine-section h2 {
+  color: #970505;
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.divine-section p {
+  color: #333;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+
+  .page-banner {
+    padding: 70px 10px 120px;
+  }
+
+  .page-banner h2 {
+    font-size: 42px;
+  }
+
+  .about-temple {
+    padding: 80px 20px;
+  }
+
+  .about-grid,
+  .about-second-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+
+  /* Banner */
+  .page-banner {
+    margin-top: 144px;
+    padding: 60px 10px 100px;
+  }
+
+  .page-banner h2 {
+    font-size: 30px;
+    line-height: 44px;
+  }
+
+  .page-banner .banner-image {
+    height: 40px;
+  }
+
+  /* Stack grids */
+  .about-grid,
+  .about-second-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* add spacing between image & text */
+  .about-image {
+    order: -1;
+  }
+
+  .about-text h2 {
+    font-size: 26px;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    line-height: 26px;
+  }
+
+  /* Divine */
+  .divine-section {
+    padding: 70px 20px;
+  }
+
+  .divine-section h2 {
+    font-size: 26px;
+  }
+
+  .divine-section p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+
+  /* Banner */
+  .page-banner {
+    margin-top: 104px;
+    padding: 40px 10px 70px;
+  }
+
+  .page-banner h2 {
+    font-size: 16px;
+    line-height: 30px;
+  }
+
+  .page-banner .banner-image {
+    height: 20px;
+  }
+
+  /* About */
+  .about-temple {
+    padding: 50px 15px;
+  }
+
+  .about-text h2 {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .about-text p {
+    font-size: 14px;
+    line-height: 22px;
+    margin-bottom: 15px;
+  }
+
+  .temple-image {
+    height: 180px;
+  }
+
+  /* Divine */
+  .divine-section {
+    padding: 50px 15px;
+  }
+
+  .divine-section h2 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .divine-section p {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}

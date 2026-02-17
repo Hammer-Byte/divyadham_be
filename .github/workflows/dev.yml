@@ -61,7 +61,7 @@ jobs:
             php artisan storage:link
 
             echo "Starting app..."
-            nohup php artisan serve --env=production > /dev/null 2>&1 &
+            nohup php artisan serve --port=${{env.PORT}} --env=production > /dev/null 2>&1 &
             echo "Starting ${{ env.REPO }}"
             echo "✅ Deployed & Disconnecting SSH"
             exit 0

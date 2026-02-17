@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - dev
-      - feature_RemovePasswrodValidation
 
 jobs:
   deploy:
@@ -12,7 +11,7 @@ jobs:
 
     env:
       DEPLOYMENT_DIRECTORY: "/var/www/sites/dev-divyadham.hammerbyte.co.in/"
-      REPO: "divyadham_api"
+      REPO: "divyadham_be"
       BRANCH: ${{ github.ref_name }}
       PORT: 8000
 

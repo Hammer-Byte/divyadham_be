@@ -50,11 +50,7 @@ jobs:
             # Clear old caches first
             php artisan optimize:clear
 
-            # Run migrations (never fresh on production!)
             php artisan migrate --force
-
-            # Passport keys (only if not already generated)
-            php artisan passport:keys --force
 
             # Cache everything for performance
             php artisan config:cache

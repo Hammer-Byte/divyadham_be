@@ -25,8 +25,8 @@
         </nav>
 
         <div class="header-right">
-            <a href="tel:+919876543210" class="call-btn"> <img src="{{ asset('images/phone.png') }}" alt="phone" width="18"
-                    height="18"> +91-9876543210</a>
+            <a href="tel:+918238346346" class="call-btn"> <img src="{{ asset('images/phone.png') }}" alt="phone" width="18"
+                    height="18"> +91-8238346346</a>
             <div class="menu-toggle" onclick="toggleMenu()">☰</div>
         </div>
     </div>

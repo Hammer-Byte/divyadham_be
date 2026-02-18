@@ -107,8 +107,8 @@
                 </div>
             </div>
             <div class="donation-image">
-                <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
-                <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
+                <img src="{{ asset('images/Donaltion_1.png') }}" alt="Temple">
+                <img src="{{ asset('images/about_temple_2.png') }}" alt="Temple">
             </div>
         </div>
     </section>

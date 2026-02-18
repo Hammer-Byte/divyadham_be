@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>History</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/history.css') }}" />
 </head>
@@ -105,29 +104,42 @@
 
             <!-- RIGHT -->
             <div class="about-image">
-                <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
-                <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
+                <img src="{{ asset('images/history_1.png') }}" alt="history_1">
+                <img src="{{ asset('images/history_2.png') }}" alt="history_2">
             </div>
 
         </div>
     </section>
     <section class="divine-section">
-        <div class="container ">
-            <h2>Events Photo Gallery</h2>
-            <div class="divine-slider swiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{{ asset('images/gallery-img.png') }}" alt="Gallery Photo">
-                    </div>
+        <div class="container">
+            <h2>Events Video Gallery</h2>
+            <div class="video-gallery">
+                <div class="video-item">
+                    <iframe 
+                        src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_1" 
+                        title="Event Video 1"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-item">
+                    <iframe 
+                        src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_2" 
+                        title="Event Video 2"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-item">
+                    <iframe 
+                        src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_3" 
+                        title="Event Video 3"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
             </div>
         </div>
@@ -136,31 +148,6 @@
     @include('components.footer')
 
     <script src="{{ asset('assets/js/header.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        const swiper = new Swiper(".divine-slider", {
-            slidesPerView: 3,
-            spaceBetween: 20,
-            loop: true,
-
-            autoplay: {
-                delay: 1000,
-                disableOnInteraction: false,
-            },
-
-            breakpoints: {
-                0: {
-                    slidesPerView: 1,
-                },
-                600: {
-                    slidesPerView: 2,
-                },
-                992: {
-                    slidesPerView: 3,
-                },
-            },
-        });
-    </script>
 </body>
 
 </html>

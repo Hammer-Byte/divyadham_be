@@ -58,7 +58,7 @@
 
             <!-- RIGHT -->
             <div class="about-image">
-                <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
+                <img src="{{ asset('images/about_trust_1.png') }}" alt="about_trust_1">
             </div>
 
         </div>

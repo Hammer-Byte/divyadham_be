@@ -11,7 +11,16 @@ Route::get('/welcome', function () {
 });
 
 Route::get('/', function () {
-    return view('home');
+    $now = Carbon::now();
+    
+    // Upcoming Events for Home Page: start_date is in the future, limit to 10
+    $upcomingEvents = Events::where('status', 1)
+        ->where('start_date', '>', $now)
+        ->orderBy('start_date', 'asc')
+        ->limit(10)
+        ->get();
+    
+    return view('home', compact('upcomingEvents'));
 })->name('home');
 
 Route::get('/about-temple', function () {

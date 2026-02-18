@@ -25,8 +25,10 @@ class FamilyMemberController extends Controller
             $user = auth()->user();
 
             // These are requests where user_id = current user and status = 0 (pending)
+            // Only registered users can receive pending requests
             $pendingRequests = FamilyMember::where('user_id', $user->id)
                 ->where('status', 0)
+                ->whereNotNull('user_id') // Only registered users can accept/reject
                 ->with('getUser') // Loads the user who sent the request (added_by)
                 ->orderBy('created_at', 'DESC')
                 ->get();
@@ -34,19 +36,21 @@ class FamilyMemberController extends Controller
             // People who added current user (user_id = current user)
             $acceptedReceived = FamilyMember::where('user_id', $user->id)
                 ->where('status', 1)
+                ->whereNotNull('user_id') // Only registered users
                 ->with('getUser') // Loads the user who added current user
                 ->get();
 
             // People current user added (added_by = current user)
+            // Include both registered (with user_id) and non-registered (without user_id) members
             $acceptedSent = FamilyMember::where('added_by', $user->id)
                 ->where('status', 1)
-                ->with('getFamilyMemberUser') // Loads the user who was added by current user
+                ->with('getFamilyMemberUser') // Loads the user who was added by current user (if registered)
                 ->get();
 
             // Pending requests sent by current user (status = 0, added_by = current user)
             $sentPendingRequests = FamilyMember::where('added_by', $user->id)
                 ->where('status', 0)
-                ->with('getFamilyMemberUser') // Loads the user who was requested to be added
+                ->with('getFamilyMemberUser') // Loads the user who was requested to be added (if registered)
                 ->orderBy('created_at', 'DESC')
                 ->get();
 
@@ -80,6 +84,8 @@ class FamilyMemberController extends Controller
     public function addFamilyMember(Request $request)
     {
         $request->validate([
+            'first_name' => 'required|string|max:150',
+            'last_name' => 'required|string|max:150',
             'phone_number' => 'required|numeric',
             'relation' => 'required|in:father,mother,spouse,child,sibling,uncle,aunty,other',
         ]);
@@ -87,34 +93,49 @@ class FamilyMemberController extends Controller
         try{
             $user = auth()->user();
 
-            $familyMember = User::withoutSystemAdmin()->where('phone_number',$request->phone_number)
+            // Check if user exists with this phone number
+            $existingUser = User::withoutSystemAdmin()
+                ->where('phone_number', $request->phone_number)
                 ->where('status', 1)
                 ->orderBy('id','DESC')
                 ->first();
 
-            $msg = 'User doesnot exist.';
+            $msg = '';
+            $memberData = null;
 
-            if ($familyMember) {
-                $alreadyAdded = FamilyMember::where('user_id', $familyMember->id)->where('status', 1)->where('added_by', $user->id)->count();
+            // CASE 1: User is REGISTERED (exists in users table)
+            if ($existingUser) {
+                // Check if already added as accepted family member
+                $alreadyAdded = FamilyMember::where('user_id', $existingUser->id)
+                    ->where('status', 1)
+                    ->where('added_by', $user->id)
+                    ->count();
 
                 if ($alreadyAdded > 0) {
                     $msg = 'User already added as family member.';
-                }else{
-                    FamilyMember::where('user_id', $familyMember->id)->where('added_by', $user->id)->delete();
+                } else {
+                    // Delete any pending requests for this user
+                    FamilyMember::where('user_id', $existingUser->id)
+                        ->where('added_by', $user->id)
+                        ->delete();
 
+                    // Create family member with user_id (registered user)
                     $insert_arr = [
-                        'user_id' => $familyMember->id,
+                        'user_id' => $existingUser->id,
+                        'first_name' => $request->first_name,
+                        'last_name' => $request->last_name,
+                        'phone_number' => $request->phone_number,
                         'relation' => $request->relation,
                         'added_by' => $user->id,
-                        'status' => 0, //pending
+                        'status' => 0,
                     ];
                     $memberData = FamilyMember::create($insert_arr);
 
                     // Send FCM notification if device token exists
-                    if (!empty($familyMember->device_token)) {
+                    if (!empty($existingUser->device_token)) {
                         try {
                             FirebaseNotificationHelper::sendFCMNotification(
-                                $familyMember->device_token,
+                                $existingUser->device_token,
                                 'New Family Member Request',
                                 trim($user->first_name . ' ' . $user->last_name) . ' wants to add you as family member.',
                                 [
@@ -128,9 +149,9 @@ class FamilyMemberController extends Controller
                         }
                     }
 
-                    // Create database notification
+                    // Create in-app notification for the family member being added
                     Notification::create([
-                        'user_id' => $familyMember->id,
+                        'user_id' => $existingUser->id,
                         'notificaiton_type' => 'event',
                         'entity_type' => 'Accept / Reject',
                         'entity_id' => $memberData->id,
@@ -141,12 +162,56 @@ class FamilyMemberController extends Controller
 
                     $msg = 'Notification sent to member to connect.';
                 }
+            } 
+            // CASE 2: User is NOT REGISTERED (doesn't exist in users table)
+            else {
+                // Check if already added by phone number (non-registered) - check for accepted status
+                $alreadyAdded = FamilyMember::whereNull('user_id')
+                    ->where('phone_number', $request->phone_number)
+                    ->where('status', 1)
+                    ->where('added_by', $user->id)
+                    ->count();
+
+                if ($alreadyAdded > 0) {
+                    $msg = 'Family member already added.';
+                } else {
+                    // Delete any pending requests for this phone number
+                    FamilyMember::whereNull('user_id')
+                        ->where('phone_number', $request->phone_number)
+                        ->where('added_by', $user->id)
+                        ->delete();
+
+                    // Create family member without user_id (non-registered user)
+                    $insert_arr = [
+                        'user_id' => null, 
+                        'first_name' => $request->first_name,
+                        'last_name' => $request->last_name,
+                        'phone_number' => $request->phone_number,
+                        'relation' => $request->relation,
+                        'added_by' => $user->id,
+                        'status' => 0, 
+                    ];
+                    $memberData = FamilyMember::create($insert_arr);
+
+                    // Create in-app notification for the person who added (added_by)
+                    Notification::create([
+                        'user_id' => $user->id,
+                        'notificaiton_type' => 'event',
+                        'entity_type' => 'Family Member Request Sent',
+                        'entity_id' => $memberData->id,
+                        'message' => trim($request->first_name . ' ' . $request->last_name) . ' will receive your family member request when they register.',
+                        'title' => 'Family Member Request Sent',
+                        'is_read' => 0,
+                    ]);
+
+                    $msg = 'Family member request sent. They will receive it when they register.';
+                }
             }
 
             return response()->json([
                 'success' => true,
                 'message' => $msg,
-                'data' => (object) [],
+                'data' => $memberData ? ['family_member_id' => $memberData->id] : (object) [],
                 'error' => (object) [],
                 ], 200);
         } catch (\Exception $e) {
@@ -173,6 +238,7 @@ class FamilyMemberController extends Controller
 
             $familyMember = FamilyMember::where('id', $request->id)
                 ->where('user_id', $user->id) // Ensure the user is the one who received the request
+                ->whereNotNull('user_id') // Only registered users can accept/reject
                 ->first();
 
             $msg = 'Family member request expired.';

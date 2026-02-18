@@ -57,7 +57,7 @@
 
       <!-- RIGHT -->
       <div class="about-image">
-        <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
+        <img src="{{ asset('images/about_temple_1.png') }}" alt="about_temple_1">
       </div>
 
     </div>
@@ -67,7 +67,7 @@
     <div class="container about-second-grid">
       <!-- LEFT -->
       <div class="about-image">
-        <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
+        <img src="{{ asset('images/about_temple_2.png') }}" alt="about_temple_2">
       </div>
       <!-- RIGHT -->
       <div class="about-text">

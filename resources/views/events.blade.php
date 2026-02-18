@@ -28,13 +28,13 @@
 
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab active" data-tab="upcoming">Upcoming Events</button>
-                <button class="tab" data-tab="ongoing">Ongoing Events</button>
+                <button class="tab active" data-tab="ongoing">Ongoing Events</button>
+                <button class="tab" data-tab="upcoming">Upcoming Events</button>
                 <button class="tab" data-tab="previous">Previous Events</button>
             </div>
 
-            <!-- TAB 1 -->
-            <div class="tab-content active" id="upcoming">
+            <!-- TAB 2 -->
+            <div class="tab-content" id="upcoming">
                 @if(isset($upcomingEvents) && $upcomingEvents->count() > 0)
                     @foreach($upcomingEvents as $event)
                     <div class="event-item">
@@ -69,8 +69,8 @@
                 @endif
             </div>
 
-            <!-- TAB 2 -->
-            <div class="tab-content" id="ongoing">
+            <!-- TAB 1 -->
+            <div class="tab-content active" id="ongoing">
                 @if(isset($ongoingEvents) && $ongoingEvents->count() > 0)
                     @foreach($ongoingEvents as $event)
                     <div class="event-item">

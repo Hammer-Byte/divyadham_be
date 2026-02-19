@@ -116,7 +116,7 @@
             <div class="video-gallery">
                 <div class="video-item">
                     <iframe 
-                        src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_1" 
+                        src="https://www.youtube.com/embed/Lo1u9T0BOkM?rel=0" 
                         title="Event Video 1"
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -125,7 +125,7 @@
                 </div>
                 <div class="video-item">
                     <iframe 
-                        src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_2" 
+                        src="https://www.youtube.com/embed/RWfgIrsHkjg?rel=0" 
                         title="Event Video 2"
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -134,7 +134,7 @@
                 </div>
                 <div class="video-item">
                     <iframe 
-                        src="https://www.youtube.com/embed/YOUTUBE_VIDEO_ID_3" 
+                        src="https://www.youtube.com/embed/JR0uJuHN8FU?rel=0" 
                         title="Event Video 3"
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PagesController;
 use App\Models\Donations;
 use App\Models\Events;
+use App\Models\PublicGalleryMedia;
+use App\Models\EventMedia;
 use Carbon\Carbon; 
 
 Route::get('/welcome', function () {
@@ -79,7 +81,17 @@ Route::get('/donation', function () {
 })->name('donation');
 
 Route::get('/photo-gallery', function () {
-    return view('photo-gallery');
+    // Fetch all active media from public_gallery_media table for Temple tab
+    $templeMedia = PublicGalleryMedia::where('status', 1)
+        ->orderBy('position', 'asc')
+        ->get();
+    
+    // Fetch media for Events tab from EventMedia table
+    $eventsMedia = EventMedia::where('status', 1)
+        ->orderBy('position', 'asc')
+        ->get();
+    
+    return view('photo-gallery', compact('templeMedia', 'eventsMedia'));
 })->name('photo-gallery');
 
 Route::get('/contact-us', function () {

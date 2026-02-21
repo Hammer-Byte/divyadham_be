@@ -24,6 +24,13 @@
             <a href="{{ route('contact-us') }}" class="{{ request()->routeIs('contact-us') ? 'active' : '' }}">Contact Us</a>
         </nav>
 
+        <div class="translate-wrapper notranslate">
+            <button type="button" class="language-btn" id="languageTrigger" aria-label="Change language">                
+                <span class="language-text">Language</span>
+            </button>
+            <div id="google_translate_element" class="google-translate-dropdown"></div>
+        </div>
+
         <div class="header-right">
             <a href="tel:+918238346346" class="call-btn"> <img src="{{ asset('images/phone.png') }}" alt="phone" width="18"
                     height="18"> +91-8238346346</a>
@@ -32,3 +39,43 @@
     </div>
 </header>
 
+@once
+<script>
+(function() {
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,hi,gu,ta,te,kn,bn,mr,pa,ml,ur'
+        }, 'google_translate_element');
+        function attachLanguageClick() {
+            var select = document.querySelector('#google_translate_element select.goog-te-combo');
+            if (select) {
+                var btn = document.getElementById('languageTrigger');
+                if (btn && !btn._translateAttached) {
+                    btn._translateAttached = true;
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        select.focus();
+                        select.click();
+                    });
+                }
+                return true;
+            }
+            return false;
+        }
+        if (!attachLanguageClick()) {
+            var attempts = 0;
+            var t = setInterval(function() {
+                if (attachLanguageClick() || ++attempts > 20) clearInterval(t);
+            }, 200);
+        }
+    }
+    window.googleTranslateElementInit = googleTranslateElementInit;
+    var script = document.createElement('script');
+    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    script.async = true;
+    document.head.appendChild(script);
+})();
+</script>
+@endonce

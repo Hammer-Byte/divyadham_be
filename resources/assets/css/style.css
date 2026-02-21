@@ -28,7 +28,7 @@ body {
 
 /* HEADER */
 .header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -148,6 +148,87 @@ body {
 /* ACTIVE DROPDOWN */
 .dropdown.open .dropdown-menu {
   display: block;
+}
+
+/* Language button + Google Translate overlay */
+.translate-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.language-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  background: #8F0D06;
+  color: #F8C500;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: "Bitter", serif;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.goog-te-gadget {
+  font-family: arial;
+  font-size: 11px;
+  color: #8F0D06 !important;
+  white-space: nowrap;
+}
+
+.language-btn:hover {
+  background: #7a0b05;
+  color: #F8C500;
+}
+
+.google-translate-dropdown {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+#google_translate_element,
+#google_translate_element .goog-te-gadget,
+#google_translate_element .skiptranslate {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 38px !important;
+}
+
+#google_translate_element span,
+#google_translate_element img,
+#google_translate_element a {
+  display: none !important;
+}
+
+#google_translate_element select.goog-te-combo {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 38px !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.goog-te-banner-frame,
+html.translated-ltr,
+html.translated-rtl {
+  top: 0 !important;
 }
 
 /* HEADER RIGHT */
@@ -1078,6 +1159,16 @@ body {
     padding: 6px 10px;
   }
 
+  .translate-wrapper {
+    flex-shrink: 0;
+  }
+
+  .language-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    min-width: 44px;
+  }
+
   /* HERO */
   .hero {
     height: 80vh;
@@ -1240,6 +1331,16 @@ body {
   .logo img {
     width: 150px;
     height: 60px;
+  }
+
+  .translate-wrapper {
+    flex-shrink: 0;
+  }
+
+  .language-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+    min-width: 90px;
   }
 
   .menu-toggle {

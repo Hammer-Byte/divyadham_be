@@ -165,7 +165,8 @@ body {
   background: transparent;
   border: 1px solid #8F0D06;
   border-radius: 5px;
-  color: #8F0D06;
+  background: #8F0D06;
+  color: #F8C500; 
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -173,6 +174,13 @@ body {
   font-family: "Bitter", serif;
   position: relative;
   z-index: 1;
+}
+
+.goog-te-gadget {
+  font-family: arial;
+  font-size: 11px;
+  color: #8F0D06 !important;
+  white-space: nowrap;
 }
 
 .language-btn:hover {

@@ -178,7 +178,7 @@
             loop: @json(isset($galleryEvents) && $galleryEvents->count() > 3),
 
             autoplay: {
-                delay: 1000,
+                delay: 5000,
                 disableOnInteraction: false,
             },
 

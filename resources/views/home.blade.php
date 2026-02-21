@@ -239,42 +239,13 @@
     <script src="{{ asset('assets/js/header.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // Initialize Events Slider
-        @if(isset($upcomingEvents) && $upcomingEvents->count() > 4)
+        @if(isset($upcomingEvents) && $upcomingEvents->count() > 0)
         const eventsSwiper = new Swiper(".events-slider", {
             slidesPerView: 3,
-            spaceBetween: 50,
-            loop: true,
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-            },
-            breakpoints: {
-                0: {
-                    slidesPerView: 1,
-                    spaceBetween: 20,
-                },
-                600: {
-                    slidesPerView: 2,
-                    spaceBetween: 20,
-                },
-                992: {
-                    slidesPerView: 3,
-                    spaceBetween: 25,
-                },
-                1200: {
-                    slidesPerView: 4,
-                    spaceBetween: 30,
-                },
-            },
-        });
-        @else
-        const eventsSwiper = new Swiper(".events-slider", {
-            slidesPerView: 4,
             spaceBetween: 30,
-            loop: false,
+            loop: @json(isset($upcomingEvents) && $upcomingEvents->count() > 3),
             autoplay: {
-                delay: 3000,
+                delay: 8000,
                 disableOnInteraction: false,
             },
             breakpoints: {
@@ -282,16 +253,8 @@
                     slidesPerView: 1,
                     spaceBetween: 20,
                 },
-                600: {
-                    slidesPerView: 2,
-                    spaceBetween: 20,
-                },
                 992: {
                     slidesPerView: 3,
-                    spaceBetween: 25,
-                },
-                1200: {
-                    slidesPerView: 4,
                     spaceBetween: 30,
                 },
             },

@@ -153,8 +153,7 @@
         <div class="container parivar-container">
             <h2>Join Parivar</h2>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Proin elementum iaculis convallis
+            Download the Divyadham App to stay connected with events, updates, and spiritual activities anytime, anywhere.
             </p>
 
             <div class="store-buttons">

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PagesController;
-use App\Models\Donations;
+use App\Models\DonationCampaign;
 use App\Models\Events;
 use App\Models\PublicGalleryMedia;
 use App\Models\EventMedia;
@@ -73,11 +73,11 @@ Route::get('/events', function () {
 })->name('events');
 
 Route::get('/donation', function () {
-    $donations = Donations::with(['donationCampaign', 'user'])
-        ->orderBy('donation_date', 'desc')
+    $donationCampaigns = DonationCampaign::where('status', 1)
+        ->orderBy('created_at', 'desc')
         ->get();
     
-    return view('donation', compact('donations'));
+    return view('donation', compact('donationCampaigns'));
 })->name('donation');
 
 Route::get('/photo-gallery', function () {

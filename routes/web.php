@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PagesController;
-use App\Models\Donations;
+use App\Models\DonationCampaign;
 use App\Models\Events;
+use App\Models\PublicGalleryMedia;
+use App\Models\EventMedia;
 use Carbon\Carbon; 
 
 Route::get('/welcome', function () {
@@ -11,7 +13,16 @@ Route::get('/welcome', function () {
 });
 
 Route::get('/', function () {
-    return view('home');
+    $now = Carbon::now();
+    
+    // Upcoming Events for Home Page: start_date is in the future, limit to 10
+    $upcomingEvents = Events::where('status', 1)
+        ->where('start_date', '>', $now)
+        ->orderBy('start_date', 'asc')
+        ->limit(10)
+        ->get();
+    
+    return view('home', compact('upcomingEvents'));
 })->name('home');
 
 Route::get('/about-temple', function () {
@@ -62,15 +73,25 @@ Route::get('/events', function () {
 })->name('events');
 
 Route::get('/donation', function () {
-    $donations = Donations::with(['donationCampaign', 'user'])
-        ->orderBy('donation_date', 'desc')
+    $donationCampaigns = DonationCampaign::where('status', 1)
+        ->orderBy('created_at', 'desc')
         ->get();
     
-    return view('donation', compact('donations'));
+    return view('donation', compact('donationCampaigns'));
 })->name('donation');
 
 Route::get('/photo-gallery', function () {
-    return view('photo-gallery');
+    // Fetch all active media from public_gallery_media table for Temple tab
+    $templeMedia = PublicGalleryMedia::where('status', 1)
+        ->orderBy('position', 'asc')
+        ->get();
+    
+    // Fetch media for Events tab from EventMedia table
+    $eventsMedia = EventMedia::where('status', 1)
+        ->orderBy('position', 'asc')
+        ->get();
+    
+    return view('photo-gallery', compact('templeMedia', 'eventsMedia'));
 })->name('photo-gallery');
 
 Route::get('/contact-us', function () {

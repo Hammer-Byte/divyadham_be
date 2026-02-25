@@ -40,24 +40,24 @@
                     Any kind of Donation provided to trust is not Refundable/Cancellable. Trust don't follow any kind of
                     Refundable/Cancellable Policy.
                 </div>
-                <h2>Donation Services & Rates</h2>
+                <h2>Donations</h2>
                 <div class="seva-section">
                     <table class="seva-table">
                         <thead>
                             <tr>
                                 <th class="col-no">No.</th>
-                                <th class="col-desc">Service Description</th>
+                                <th class="col-desc">Donation</th>
                                 <th class="col-amt">Amount (₹)</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            @if(isset($donations) && $donations->count() > 0)
-                                @foreach($donations as $index => $donation)
+                            @if(isset($donationCampaigns) && $donationCampaigns->count() > 0)
+                                @foreach($donationCampaigns as $index => $campaign)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ $donation->donationCampaign ? $donation->donationCampaign->title : 'N/A' }}</td>
-                                    <td class="amt">{{ $donation->currency ?? '₹' }}{{ number_format($donation->amount, 2) }}</td>
+                                    <td>{{ $campaign->title ?? 'N/A' }}</td>
+                                    <td class="amt">₹ {{ number_format($campaign->goal_amount, 2) }}</td>
                                 </tr>
                                 @endforeach
                             @endif
@@ -67,17 +67,17 @@
                                 <td colspan="3">Important Instructions</td>
                             </tr>
                             <tr>
-                                <td>{{ isset($donations) && $donations->count() > 0 ? $donations->count() + 1 : 12 }}</td>
+                                <td>{{ isset($donationCampaigns) && $donationCampaigns->count() > 0 ? $donationCampaigns->count() + 1 : 12 }}</td>
                                 <td>The flag (Dhaja) must be obtained from the temple's office.</td>
                                 <td class="amt">-</td>
                             </tr>
                             <tr>
-                                <td>{{ isset($donations) && $donations->count() > 0 ? $donations->count() + 2 : 13 }}</td>
+                                <td>{{ isset($donationCampaigns) && $donationCampaigns->count() > 0 ? $donationCampaigns->count() + 2 : 13 }}</td>
                                 <td>To hoist the flag, an offering of "Thal" to Mataji is mandatory.</td>
                                 <td class="amt">-</td>
                             </tr>
                             <tr>
-                                <td>{{ isset($donations) && $donations->count() > 0 ? $donations->count() + 3 : 14 }}</td>
+                                <td>{{ isset($donationCampaigns) && $donationCampaigns->count() > 0 ? $donationCampaigns->count() + 3 : 14 }}</td>
                                 <td>Registration is required to hoist the flag. Mobile: 97236 82345</td>
                                 <td class="amt">-</td>
                             </tr>
@@ -107,8 +107,8 @@
                 </div>
             </div>
             <div class="donation-image">
-                <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
-                <img src="{{ asset('images/divine_side.png') }}" alt="Temple">
+                <img src="{{ asset('images/Donaltion_1.png') }}" alt="Temple">
+                <img src="{{ asset('images/about_temple_2.png') }}" alt="Temple">
             </div>
         </div>
     </section>

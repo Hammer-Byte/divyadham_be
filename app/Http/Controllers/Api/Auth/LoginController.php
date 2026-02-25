@@ -121,7 +121,7 @@ class LoginController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:5120',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'nullable|email|unique:users,email',
             // 'password' => 'required', // Password field removed - not required in registration
             'occupation' => 'nullable',
             'campany_name' => 'nullable',
@@ -137,7 +137,6 @@ class LoginController extends Controller
         ];
 
         $messages =  [
-            'email.required' => 'The email field is required.',
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email is already taken.',
             'phone_number.numeric' => 'Phone number must be a valid number.',
@@ -168,6 +167,78 @@ class LoginController extends Controller
             $data['is_verified'] = 1;
 
             $user = User::create($data);
+
+            $pendingFamilyMembers = \App\Models\FamilyMember::whereNull('user_id')
+                ->where('phone_number', $request->phone_number)
+                ->get();
+
+            foreach ($pendingFamilyMembers as $familyMember) {
+                $familyMember->user_id = $user->id;
+                $familyMember->save();
+
+                // Get the person who added this family member
+                $addedByUser = User::find($familyMember->added_by);
+                
+                if ($addedByUser) {
+                    // Send FCM notification to the person who added (if device token exists)
+                    if (!empty($addedByUser->device_token)) {
+                        try {
+                            \App\Helpers\FirebaseNotificationHelper::sendFCMNotification(
+                                $addedByUser->device_token,
+                                'Family Member Registered',
+                                trim($user->first_name . ' ' . $user->last_name) . ' has registered. You can now connect as family member.',
+                                [
+                                    'click_action' => 'family_member_registered',
+                                    'id' => (string)$familyMember->id,
+                                    'status' => 'Registered'
+                                ]
+                            );
+                        } catch (\Exception $e) {
+                            Log::error('FCM Notification Error in registerUser: ' . $e->getMessage());
+                        }
+                    }
+
+                    // Create in-app notification for the person who added
+                    \App\Models\Notification::create([
+                        'user_id' => $familyMember->added_by,
+                        'notificaiton_type' => 'event',
+                        'entity_type' => 'Family Member Registered',
+                        'entity_id' => $familyMember->id,
+                        'message' => trim($user->first_name . ' ' . $user->last_name) . ' has registered. You can now connect as family member.',
+                        'title' => 'Family Member Registered',
+                        'is_read' => 0,
+                    ]);
+
+                    // Send FCM notification to newly registered user about pending family member request
+                    if (!empty($user->device_token)) {
+                        try {
+                            \App\Helpers\FirebaseNotificationHelper::sendFCMNotification(
+                                $user->device_token,
+                                'Family Member Request',
+                                trim($addedByUser->first_name . ' ' . $addedByUser->last_name) . ' wants to add you as family member.',
+                                [
+                                    'click_action' => 'accept_reject_family_member',
+                                    'id' => (string)$familyMember->id,
+                                    'status' => 'Pending'
+                                ]
+                            );
+                        } catch (\Exception $e) {
+                            Log::error('FCM Notification Error in registerUser (to new user): ' . $e->getMessage());
+                        }
+                    }
+
+                    // Create in-app notification for newly registered user
+                    \App\Models\Notification::create([
+                        'user_id' => $user->id,
+                        'notificaiton_type' => 'event',
+                        'entity_type' => 'Accept / Reject',
+                        'entity_id' => $familyMember->id,
+                        'message' => trim($addedByUser->first_name . ' ' . $addedByUser->last_name) . ' has requested you to connect as family member.',
+                        'title' => 'Family Member Request',
+                        'is_read' => 0,
+                    ]);
+                }
+            }
 
             $data['token'] = $user->createToken('UserApp')->accessToken;
             $data['user'] = $user;

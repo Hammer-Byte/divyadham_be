@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Divya Dham</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
 </head>
 
@@ -50,28 +51,28 @@
                     part of this divine effort and earning spiritual merit.
                 </p>
 
-                <a href="#" class="btn">Know More</a>
+                <a href="{{ route('about-temple') }}" class="btn">Know More</a>
             </div>
 
             <!-- Right Image -->
             <div class="about-image">
-                <img src="{{ asset('images/mata.png') }}" alt="Jay Verai Mataji" height="470" width="100%" />
+                <img src="{{ asset('images/Home_1.png') }}" alt="home_jyot" height="470" width="100%" />
             </div>
 
         </div>
     </section>
-    <section class="darshan-section">
+    <!-- <section class="darshan-section">
         <div class="darshan-background"></div>
         <div class="container darshan-container">
 
-            <!-- Top Border Pattern -->
+            
             <div class="pattern top"></div>
 
             <h2 class="section-title">Daily Darshan</h2>
 
             <div class="darshan-cards">
 
-                <!-- Card 1 -->
+               
                 <div class="darshan-card">
                     <div class="card-title">Verai Mataji</div>
                     <div class="video-box">
@@ -82,7 +83,7 @@
                     </div>
                 </div>
 
-                <!-- Card 2 -->
+               
                 <div class="darshan-card">
                     <div class="card-title">Pata Dada</div>
                     <div class="video-box">
@@ -95,68 +96,52 @@
 
             </div>
 
-            <!-- Bottom Border Pattern -->
+          
             <div class="pattern bottom"></div>
 
         </div>
-    </section>
+    </section> -->
     <section class="events-section">
         <h2 class="events-title">Upcoming Events or Festival</h2>
 
-        <div class="container events-container">
-
-            <!-- Card -->
-            <div class="event-card">
-                <div class="event-img">
-                    <img src="{{ asset('images/event_1.png') }}" alt="Event">
-                    <span class="event-date">02 Oct, 2025 | 02:00 PM</span>
+        <div class="container">
+            @if(isset($upcomingEvents) && $upcomingEvents->count() > 0)
+                <div class="events-slider swiper">
+                    <div class="swiper-wrapper events-container">
+                        @foreach($upcomingEvents as $event)
+                        <div class="swiper-slide">
+                            <div class="event-card">
+                                <div class="event-img">
+                                    @if($event->event_image_full_url)
+                                        <img src="{{ $event->event_image_full_url }}" alt="{{ $event->title }}">
+                                    @else
+                                        <img src="{{ asset('images/event_1.png') }}" alt="{{ $event->title }}">
+                                    @endif
+                                    <span class="event-date">
+                                        @if($event->start_date)
+                                            {{ \Carbon\Carbon::parse($event->start_date)->format('d M, Y | h:i A') }}
+                                        @endif
+                                    </span>
+                                </div>
+                                <div class="event-content">
+                                    <h3>{{ $event->title }}</h3>
+                                    <p>{{ Str::limit($event->description ?? '', 100) }}</p>
+                                </div>
+                                <div class="arrow-btn"><span class="arrow-icon"></span></div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
-                <div class="event-content">
-                    <h3>Aenean eu ante sit amet neque pretium ullamcorper</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin elementum iaculis convallis.</p>
+            @else
+                <div class="events-container">
+                    <div class="event-card">
+                        <div class="event-content">
+                            <p>No upcoming events scheduled.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="arrow-btn"><span class="arrow-icon"></span></div>
-            </div>
-
-            <!-- Card -->
-            <div class="event-card">
-                <div class="event-img">
-                    <img src="{{ asset('images/event_2.png') }}" alt="Event">
-                    <span class="event-date">02 Oct, 2025 | 02:00 PM</span>
-                </div>
-                <div class="event-content">
-                    <h3>Aenean eu ante sit amet neque pretium ullamcorper</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin elementum iaculis convallis.</p>
-                </div>
-                <div class="arrow-btn"><span class="arrow-icon"></span></div>
-            </div>
-
-            <!-- Card -->
-            <div class="event-card">
-                <div class="event-img">
-                    <img src="{{ asset('images/event_3.png') }}" alt="Divyadham">
-                    <span class="event-date">02 Oct, 2025 | 02:00 PM</span>
-                </div>
-                <div class="event-content">
-                    <h3>Aenean eu ante sit amet neque pretium ullamcorper</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin elementum iaculis convallis.</p>
-                </div>
-                <div class="arrow-btn"><span class="arrow-icon"></span></div>
-            </div>
-
-            <!-- Card -->
-            <div class="event-card">
-                <div class="event-img">
-                    <img src="{{ asset('images/event_4.png') }}" alt="Event">
-                    <span class="event-date">02 Oct, 2025 | 02:00 PM</span>
-                </div>
-                <div class="event-content">
-                    <h3>Aenean eu ante sit amet neque pretium ullamcorper</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin elementum iaculis convallis.</p>
-                </div>
-                <div class="arrow-btn"><span class="arrow-icon"></span></div>
-            </div>
-
+            @endif
         </div>
 
         <div class="center-btn">
@@ -168,8 +153,7 @@
         <div class="container parivar-container">
             <h2>Join Parivar</h2>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Proin elementum iaculis convallis
+            Download the Divyadham App to stay connected with events, updates, and spiritual activities anytime, anywhere.
             </p>
 
             <div class="store-buttons">
@@ -192,10 +176,9 @@
             </div>
         </div>
     </section>
-    <section class="info-section">
+    <!-- <section class="info-section">
         <div class="container info-container">
 
-            <!-- Donations Card -->
             <div class="card">
                 <div class="card-header">
                     <h3>Donations</h3>
@@ -224,7 +207,6 @@
                 </div>
             </div>
 
-            <!-- Blogs Card -->
             <div class="card">
                 <div class="card-header">
                     <h3>Blogs</h3>
@@ -250,11 +232,34 @@
             </div>
 
         </div>
-    </section>
+    </section> -->
     @include('components.footer')
     
     <script src="{{ asset('assets/js/header.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
+        @if(isset($upcomingEvents) && $upcomingEvents->count() > 0)
+        const eventsSwiper = new Swiper(".events-slider", {
+            slidesPerView: 3,
+            spaceBetween: 30,
+            loop: @json(isset($upcomingEvents) && $upcomingEvents->count() > 3),
+            autoplay: {
+                delay: 8000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                0: {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                },
+                992: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                },
+            },
+        });
+        @endif
+
         function toggleVideo(videoId, btn) {
             var video = document.getElementById(videoId);
 

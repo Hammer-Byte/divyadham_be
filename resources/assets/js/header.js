@@ -33,3 +33,15 @@ document.addEventListener("click", function (e) {
 function toggleMenu() {
   document.getElementById("navMenu").classList.toggle("show");
 }
+
+// Header scroll effect - toggle white background on scroll
+window.addEventListener('scroll', function() {
+  const header = document.querySelector('.header');
+  if (header) {
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  }
+});

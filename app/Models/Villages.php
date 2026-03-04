@@ -8,6 +8,7 @@ use App\Models\VillageMember;
 use App\Models\VillageMedia;
 use App\Models\State;
 use App\Models\District;
+use App\Models\Taluka;
 
 class Villages extends Model
 {
@@ -21,6 +22,7 @@ class Villages extends Model
         'description',
         'state',
         'district',
+        'taluka_id',
         'population',
         'latitude',
         'longitude',
@@ -41,5 +43,13 @@ class Villages extends Model
 
     public function getDistrict() {
         return $this->hasOne(District::class, 'id','district');
+    }
+
+    /**
+     * Get the taluka (optional - may be null for existing villages).
+     */
+    public function getTaluka()
+    {
+        return $this->belongsTo(Taluka::class, 'taluka_id', 'id');
     }
 }

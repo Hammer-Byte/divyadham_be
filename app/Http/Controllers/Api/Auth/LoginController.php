@@ -122,14 +122,13 @@ class LoginController extends Controller
             'last_name' => 'required',
             'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:5120',
             'email' => 'nullable|email|unique:users,email',
-            // 'password' => 'required', // Password field removed - not required in registration
             'occupation' => 'nullable',
             'campany_name' => 'nullable',
             'address' => 'nullable',
             'city' => 'nullable',
-            'state' => 'nullable',
-            'district' => 'nullable|string|max:250',
-            'village' => 'nullable|string|max:250',
+            'state' => 'required|string|max:255',
+            'district' => 'required|string|max:250',
+            'village' => 'required|string|max:255',
             'country' => 'nullable',
             'zipcode' => 'nullable',
             'device_type' => 'nullable|string',
@@ -150,20 +149,32 @@ class LoginController extends Controller
         $data = $request->validate($rules, $messages);
 
         try {
-
             $existOffilne = OfflineData::where('phone_number', $request->phone_number)->where('first_name', $request->first_name)->where('last_name', $request->last_name)->first();
 
             if ($request->hasFile('profile_image')) {
                 $data['profile_image'] = storeFile($request->file('profile_image'), 'profile_images');
             }
 
+            $village = $this->findOrCreateVillage(
+                $request->state,
+                $request->district,
+                trim($request->village)
+            );
+            if (!$village) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'State or district not found.',
+                    'data' => (object) [],
+                    'error' => 'Invalid state or district.',
+                ], 422);
+            }
+
             $data['status'] = 1;
-            // Password field removed - not required in registration
-            // $data['password'] = Hash::make($request->password);
-            $data['device_type'] = isset($request->device_type) ? $request->device_type : null;
-            $data['device_token'] = isset($request->device_token) ? $request->device_token : null;
-            $data['district'] = isset($request->district) ? $request->district : null;
-            $data['village'] = isset($request->village) ? $request->village : null;
+            $data['device_type'] = $request->device_type ?? null;
+            $data['device_token'] = $request->device_token ?? null;
+            $data['state'] = $request->state;
+            $data['district'] = $request->district;
+            $data['village'] = trim($request->village);
             $data['is_verified'] = 1;
 
             $user = User::create($data);
@@ -666,18 +677,46 @@ class LoginController extends Controller
         }
     }
 
+
+    private function findOrCreateVillage(string $stateName, string $districtName, string $villageName): ?Villages
+    {
+        $state = State::where('name', trim($stateName))->first();
+        if (!$state) {
+            return null;
+        }
+        $district = District::where('name', trim($districtName))->where('state_id', $state->id)->first();
+        if (!$district) {
+            return null;
+        }
+        $name = trim($villageName);
+        $existing = Villages::where('name', $name)
+            ->where('state', $state->id)
+            ->where('district', $district->id)
+            ->first();
+        if ($existing) {
+            return $existing;
+        }
+        return Villages::create([
+            'name' => $name,
+            'state' => $state->id,
+            'district' => $district->id,
+            'population' => null,
+            'latitude' => null,
+            'longitude' => null,
+            'status' => 1,
+        ]);
+    }
+
+
     public function addVillage(Request $request)
     {
-        try{
-            // Validate input
-            $validator = Validator::make($request->all(), [
+        try {
+            $rules = [
                 'name' => 'required|string|max:255',
-                'state' => 'required|string|max:255',
-                'district' => 'required|string|max:255',
-                'population' => 'nullable|numeric|min:0',
-                'latitude' => 'nullable|numeric',
-                'longitude' => 'nullable|numeric',
-            ]);
+                'state' => 'nullable|string|max:255',
+                'district' => 'nullable|string|max:255',
+            ];
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
@@ -688,9 +727,25 @@ class LoginController extends Controller
                 ], 422);
             }
 
-            // Find state by name
-            $state = State::where('name', $request->state)->first();
-            
+            $user = auth('api')->user();
+            $stateName = trim((string) ($request->state ?? ''));
+            $districtName = trim((string) ($request->district ?? ''));
+            if ($user) {
+                if ($stateName === '' || $districtName === '') {
+                    $stateName = $stateName !== '' ? $stateName : trim((string) ($user->state ?? ''));
+                    $districtName = $districtName !== '' ? $districtName : trim((string) ($user->district ?? ''));
+                }
+            }
+            if ($stateName === '' || $districtName === '') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'State and district are required. During registration please send state and district with the request.',
+                    'data' => (object) [],
+                    'error' => 'State and district are required.',
+                ], 422);
+            }
+
+            $state = State::where('name', $stateName)->first();
             if (!$state) {
                 return response()->json([
                     'success' => false,
@@ -700,32 +755,40 @@ class LoginController extends Controller
                 ], 404);
             }
 
-            // Find district by name (also verify it belongs to the state)
-            $district = District::where('name', $request->district)
+            $district = District::where('name', $districtName)
                 ->where('state_id', $state->id)
                 ->first();
-            
             if (!$district) {
                 return response()->json([
                     'success' => false,
                     'message' => 'District not found or does not belong to the specified state.',
                     'data' => (object) [],
-                    'error' => 'The provided district name does not exist or is not associated with the specified state.',
+                    'error' => 'The provided district does not exist or is not associated with the specified state.',
                 ], 404);
             }
 
-            // Create village
-            $village = Villages::create([
-                'name' => $request->name,
-                'state' => $state->id,
-                'district' => $district->id,
-                'population' => $request->population ?? 0,
-                'latitude' => $request->latitude ?? 0,
-                'longitude' => $request->longitude ?? 0,
-                'status' => 1,
-            ]);
+            $name = trim($request->name);
+            $existing = Villages::where('name', $name)
+                ->where('state', $state->id)
+                ->where('district', $district->id)
+                ->first();
 
-            $data['village'] = $village->load('getState', 'getDistrict');
+            if ($existing) {
+                $village = $existing->load('getState', 'getDistrict');
+            } else {
+                $village = Villages::create([
+                    'name' => $name,
+                    'state' => $state->id,
+                    'district' => $district->id,
+                    'population' => null,
+                    'latitude' => null,
+                    'longitude' => null,
+                    'status' => 1,
+                ]);
+                $village = $village->load('getState', 'getDistrict');
+            }
+
+            $data['village'] = $village;
 
             return response()->json([
                 'success' => true,
@@ -733,7 +796,6 @@ class LoginController extends Controller
                 'data' => $data,
                 'error' => (object) [],
             ], 201);
-
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 

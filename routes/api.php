@@ -66,6 +66,11 @@ Route::post("add-village", [LoginController::class, "addVillage"])->name(
     "add-village"
 );
 
+// Page content from DB – no auth (for Android; reflects Admin → Pages)
+Route::get("get-page/{slug}", [PagesController::class, "getPage"])->name(
+    "get-page"
+);
+
 Route::middleware("auth:api")->group(function () {
     Route::get("master", [MasterController::class, "index"])->name("master");
     Route::get("user-profile", [MasterController::class, "userProfile"])->name(
@@ -141,10 +146,6 @@ Route::middleware("auth:api")->group(function () {
         CommitteesController::class,
         "committeeDetail",
     ])->name("committee-detail");
-
-    Route::get("get-page/{slug}", [PagesController::class, "getPage"])->name(
-        "get-page"
-    );
 
     Route::get("public-documents/", [
         PublicDocumentsController::class,

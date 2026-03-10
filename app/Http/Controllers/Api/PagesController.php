@@ -20,27 +20,29 @@ class PagesController extends Controller
     public function renderPage($slug)
     {
         $page = Pages::where('status', 1)->where('slug', $slug)->first();
-        
+
+        if (!$page) {
+            abort(404);
+        }
+
         // Decode HTML entities if content is double-encoded
         // This ensures HTML tags are properly rendered
         $page->content = html_entity_decode($page->content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        
+
         return view('dynamic', ['page' => $page]);
     }
 
-    public function getPage(Request $request)
+    public function getPage($slug)
     {
-        try{
-            $user = auth()->user();
-
-            $data['page'] = Pages::where('status', 1)->where('slug', $request->slug)->first();
+        try {
+            $data['page'] = Pages::where('status', 1)->where('slug', $slug)->first();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Api called successfully',
                 'data' => $data,
                 'error' => (object) [],
-                ], 200);
+            ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
@@ -52,5 +54,4 @@ class PagesController extends Controller
             ], 500);
         }
     }
-
 }

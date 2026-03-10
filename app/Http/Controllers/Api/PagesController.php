@@ -35,12 +35,21 @@ class PagesController extends Controller
     public function getPage($slug)
     {
         try {
-            $data['page'] = Pages::where('status', 1)->where('slug', $slug)->first();
+            $page = Pages::where('status', 1)->where('slug', $slug)->first();
+
+            if (!$page) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Page not found.',
+                    'data' => (object) [],
+                    'error' => 'Page not found',
+                ], 404);
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Api called successfully',
-                'data' => $data,
+                'data' => ['page' => $page],
                 'error' => (object) [],
             ], 200);
         } catch (\Exception $e) {

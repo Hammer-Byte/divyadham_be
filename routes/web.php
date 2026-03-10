@@ -110,5 +110,9 @@ Route::get('/disclaimer', function () {
     return view('disclaimer');
 })->name('disclaimer');
 
+// Android / WebView: HTML page from DB (e.g. /page/terms-and-conditions)
+Route::get('/page/{slug}', [PagesController::class, 'renderPage'])->name('page.show');
+
+// Dynamic pages from DB (e.g. /about-us, /test) – keep last so specific routes match first
 Route::get('/{slug}', [PagesController::class, 'renderPage']);
 

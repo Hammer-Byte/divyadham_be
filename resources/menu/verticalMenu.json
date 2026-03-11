@@ -209,6 +209,17 @@
         ]
     },
     {
+        "name": "Contact Us",
+        "icon": "menu-icon tf-icons fa fa-envelope",
+        "slug": "manage.contactUs",
+        "url": "manage/contact-us",
+        "accepted_routes":[
+            "manage.contactUs",
+            "manage.contactUsList",
+            "manage.contactUsUpdateAttended"
+        ]
+    },
+    {
         "name": "Custom Notification",
         "icon": "menu-icon tf-icons fa fa-bell",
         "slug": "manage.customNotification",

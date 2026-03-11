@@ -25,6 +25,7 @@ use App\Http\Controllers\Manage\GalleryController;
 use App\Http\Controllers\Manage\GalleryMediaController;
 use App\Http\Controllers\Manage\PagesController;
 use App\Http\Controllers\Manage\CustomNotificationController;
+use App\Http\Controllers\Manage\ContactUsController;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -513,6 +514,18 @@ Route::middleware(["AdminUserCheck"])->group(function () {
     Route::post("page/update", [PagesController::class, "update"])->name(
         "pageUpdate"
     );
+
+    //Contact Us Inquiries
+    Route::get("contact-us", [ContactUsController::class, "index"])->name(
+        "contactUs"
+    );
+    Route::get("contactUsList", [ContactUsController::class, "contactList"])->name(
+        "contactUsList"
+    );
+    Route::post("contact-us/update-attended", [
+        ContactUsController::class,
+        "updateAttended",
+    ])->name("contactUsUpdateAttended");
 
     //Custom Notification
     Route::get("custom-notification", [

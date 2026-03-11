@@ -45,10 +45,10 @@
         <div class="footer-social">
             <h4>Follow Us</h4>
             <div class="social-icons">
-                <a href="#"><img src="{{ asset('images/instagram_icon.png') }}" alt="instagram icon"></a>
-                <a href="#"><img src="{{ asset('images/whatsapp.png') }}" alt="whatsapp icon"></a>
-                <a href="#"><img src="{{ asset('images/youtube.png') }}" alt="youtube icon"></a>
-                <a href="#"><img src="{{ asset('images/facebook_icon.png') }}" alt="facebook icon"></a>
+                <a href="https://www.youtube.com/@divyadhammandir" target="_blank" rel="noopener noreferrer" title="YouTube"><img src="{{ asset('images/youtube.png') }}" alt="YouTube"></a>
+                <a href="https://www.facebook.com/divyadhammandir" target="_blank" rel="noopener noreferrer" title="Facebook"><img src="{{ asset('images/facebook_icon.png') }}" alt="Facebook"></a>
+                <a href="https://www.instagram.com/divyadhammandir_official" target="_blank" rel="noopener noreferrer" title="Instagram"><img src="{{ asset('images/instagram_icon.png') }}" alt="Instagram"></a>
+                <a href="https://wa.me/919723692345" target="_blank" rel="noopener noreferrer" title="WhatsApp"><img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp"></a>
             </div>
         </div>
     </div>

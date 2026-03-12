@@ -110,6 +110,11 @@ Route::get('/disclaimer', function () {
     return view('disclaimer');
 })->name('disclaimer');
 
+Route::get('/delete-account', function () {
+    return "<h2>Account Deletion</h2>
+    <p>You can delete your account from inside the mobile application by going to Profile → Delete Account.</p>";
+});
+
 // Android / WebView: HTML page from DB (e.g. /page/terms-and-conditions)
 Route::get('/page/{slug}', [PagesController::class, 'renderPage'])->name('page.show');
 

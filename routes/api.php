@@ -71,10 +71,9 @@ Route::get("get-page/{slug}", [PagesController::class, "getPage"])->name(
     "get-page"
 );
 
-Route::get('/delete-account', function () {
-    return response()->json([
-        'message' => 'Users can delete their account from inside the mobile application by going to Profile → Delete Account.'
-    ]);
+Route::get('delete-account', function () {
+    return "<h2>Account Deletion</h2>
+    <p>You can delete your account from inside the mobile application by going to Profile → Delete Account.</p>";
 });
 
 Route::middleware("auth:api")->group(function () {

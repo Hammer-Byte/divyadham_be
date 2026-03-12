@@ -71,6 +71,12 @@ Route::get("get-page/{slug}", [PagesController::class, "getPage"])->name(
     "get-page"
 );
 
+Route::get('/delete-account', function () {
+    return response()->json([
+        'message' => 'Users can delete their account from inside the mobile application by going to Profile → Delete Account.'
+    ]);
+});
+
 Route::middleware("auth:api")->group(function () {
     Route::get("master", [MasterController::class, "index"])->name("master");
     Route::get("user-profile", [MasterController::class, "userProfile"])->name(
@@ -193,6 +199,7 @@ Route::middleware("auth:api")->group(function () {
         LoginController::class,
         "deleteAccount",
     ])->name("delete-account");
+    
     Route::post("contact-us", [ContactUsController::class, "store"])->name(
         "api.contact-us"
     );

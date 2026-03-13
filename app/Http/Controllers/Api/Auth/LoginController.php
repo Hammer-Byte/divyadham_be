@@ -14,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use App\Services\TwilioService;
 use App\Models\State;
 use App\Models\District;
@@ -115,13 +116,31 @@ class LoginController extends Controller
 
     public function registerUser(Request $request)
     {
+        // Check if this phone belongs to a soft-deleted user (re-registration after account delete)
+        $softDeletedUser = User::onlyTrashed()
+            ->where('phone_number', $request->phone_number)
+            ->first();
+
         $rules = [
             'country_code' => 'required',
-            'phone_number' => 'required|numeric|digits_between:8,15|unique:users,phone_number',
+            'phone_number' => [
+                'required',
+                'numeric',
+                'digits_between:8,15',
+                $softDeletedUser
+                    ? Rule::unique('users', 'phone_number')->ignore($softDeletedUser->id)
+                    : 'unique:users,phone_number',
+            ],
             'first_name' => 'required',
             'last_name' => 'required',
             'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:5120',
-            'email' => 'nullable|email|unique:users,email',
+            'email' => [
+                'nullable',
+                'email',
+                $softDeletedUser
+                    ? Rule::unique('users', 'email')->ignore($softDeletedUser->id)
+                    : 'unique:users,email',
+            ],
             'occupation' => 'nullable',
             'campany_name' => 'nullable',
             'address' => 'nullable',
@@ -177,7 +196,14 @@ class LoginController extends Controller
             $data['village'] = trim($request->village);
             $data['is_verified'] = 1;
 
-            $user = User::create($data);
+            if ($softDeletedUser) {
+                // Re-registration: restore the soft-deleted user and update with new data
+                $softDeletedUser->restore();
+                $softDeletedUser->update($data);
+                $user = $softDeletedUser;
+            } else {
+                $user = User::create($data);
+            }
 
             $pendingFamilyMembers = \App\Models\FamilyMember::whereNull('user_id')
                 ->where('phone_number', $request->phone_number)

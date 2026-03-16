@@ -112,7 +112,7 @@
     </section>
     <section class="divine-section">
         <div class="container">
-            <h2>Events Video Gallery</h2>
+            <h2>Video Gallery</h2>
             <div class="video-gallery">
                 <div class="video-item">
                     <iframe 

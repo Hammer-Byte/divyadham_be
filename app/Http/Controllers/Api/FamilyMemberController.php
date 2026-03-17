@@ -305,4 +305,59 @@ class FamilyMemberController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Remove an existing family member connection.
+     *
+     * Rules:
+     * - Only the user who added the family member (added_by)
+     *   or the user who was added (user_id) can remove the connection.
+     */
+    public function removeFamilyMember(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|numeric',
+        ]);
+
+        try{
+            $user = auth()->user();
+
+            // User can remove if:
+            // - they are the one who added the member (added_by)
+            // - OR they are the member themselves (user_id)
+            $familyMember = FamilyMember::where('id', $request->id)
+                ->where(function ($q) use ($user) {
+                    $q->where('added_by', $user->id)
+                      ->orWhere('user_id', $user->id);
+                })
+                ->first();
+
+            if (!$familyMember) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Family member not found.',
+                    'data' => (object) [],
+                    'error' => 'Invalid family member or permission denied',
+                ], 404);
+            }
+
+            $familyMember->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Family member removed successfully.',
+                'data' => (object) [],
+                'error' => (object) [],
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

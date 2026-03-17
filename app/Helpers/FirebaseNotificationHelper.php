@@ -26,14 +26,10 @@ class FirebaseNotificationHelper
             "app/firebase/firebase_credentials.json"
         );
 
-        Log::info("CALLED1");
-
         // Check if credentials file exists
         if (!file_exists($credentialsPath)) {
             throw new \Exception("Firebase credentials file not found");
         }
-
-        Log::info("CALLED2");
 
         $credentials = json_decode(file_get_contents($credentialsPath), true);
 
@@ -44,8 +40,6 @@ class FirebaseNotificationHelper
             throw new \Exception("Invalid Firebase credentials file");
         }
 
-        Log::info("CALLED3");
-
         $scopedCredentials = new ServiceAccountCredentials(
             "https://www.googleapis.com/auth/firebase.messaging",
             $credentialsPath
@@ -54,8 +48,6 @@ class FirebaseNotificationHelper
         $accessToken = $scopedCredentials->fetchAuthToken()["access_token"];
 
         $projectId = $credentials["project_id"];
-
-        Log::info("CALLED4");
 
         // Base data payload (ensure all values are strings as per FCM requirement)
         $baseData = [
@@ -67,14 +59,16 @@ class FirebaseNotificationHelper
                 : "FLUTTER_NOTIFICATION_CLICK",
         ];
 
-        Log::info("CALLED5");
+        Log::info("FCM Request", [
+            "device_token" => $deviceToken, // ← log this, check what value is coming in
+            "title" => $title,
+            "body" => $body,
+        ]);
 
         // Merge any custom keys passed in $data (stringified)
         foreach ($data as $key => $value) {
             $baseData[$key] = (string) $value;
         }
-
-        Log::info("CALLED6");
 
         $payload = [
             "message" => [

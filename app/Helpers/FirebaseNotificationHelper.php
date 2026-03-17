@@ -107,6 +107,13 @@ class FirebaseNotificationHelper
 
         echo $response->json();
 
+        Log::info("FCM Response", $response->json());
+
+        Log::info("FCM Response", [
+            "status" => $response->status(),
+            "body" => $response->json(),
+        ]);
+
         return $response->json();
     }
 }

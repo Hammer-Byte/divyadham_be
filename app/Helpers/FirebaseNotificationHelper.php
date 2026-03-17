@@ -60,9 +60,7 @@ class FirebaseNotificationHelper
         ];
 
         Log::info("FCM Request", [
-            "device_token" => $deviceToken, // ← log this, check what value is coming in
-            "title" => $title,
-            "body" => $body,
+            "payload" => $payload, // ← log this, check what value is coming in
         ]);
 
         // Merge any custom keys passed in $data (stringified)

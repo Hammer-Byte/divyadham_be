@@ -80,7 +80,7 @@ class FirebaseNotificationHelper
                         "body" => $body,
                         "sound" => "default",
                         "click_action" => "FLUTTER_NOTIFICATION_CLICK",
-                        "channel_id" => "high_importance_channel",
+                        "channel_id" => "basic_channel",
                     ],
                 ],
                 "apns" => [

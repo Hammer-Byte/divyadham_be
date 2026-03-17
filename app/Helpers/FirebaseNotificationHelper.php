@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Http;
 use Google\Auth\OAuth2;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 
+use Illuminate\Support\Facades\Log;
+
 class FirebaseNotificationHelper
 {
     public static function sendFCMNotification(

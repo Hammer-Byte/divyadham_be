@@ -105,7 +105,7 @@ class FirebaseNotificationHelper
             $payload
         );
 
-        echo $response->json();
+        Log::info("CALLED1111");
 
         Log::info("FCM Response", $response->json());
 

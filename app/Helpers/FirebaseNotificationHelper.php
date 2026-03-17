@@ -36,23 +36,59 @@ class FirebaseNotificationHelper
 
         $projectId = $credentials['project_id'];
 
-        // Convert all data values to strings (FCM requirement)
-        $dataString = [];
+        // Base data payload (ensure all values are strings as per FCM requirement)
+        $baseData = [
+            'notification_type' => isset($data['type']) ? (string)$data['type'] : '',
+            'click_action' => isset($data['click_action'])
+                ? (string)$data['click_action']
+                : 'FLUTTER_NOTIFICATION_CLICK',
+        ];
+
+        // Merge any custom keys passed in $data (stringified)
         foreach ($data as $key => $value) {
-            $dataString[$key] = (string)$value;
+            $baseData[$key] = (string)$value;
         }
 
-        $response = Http::withToken($accessToken)
-            ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
-                'message' => [
-                    'token' => $deviceToken,
+        $payload = [
+            'message' => [
+                'token' => $deviceToken,
+                'notification' => [
+                    'title' => $title,
+                    'body' => $body,
+                ],
+                'data' => $baseData,
+                'android' => [
+                    'priority' => 'high',
+                    'ttl' => '0s',
                     'notification' => [
                         'title' => $title,
                         'body' => $body,
+                        'sound' => 'default',
+                        'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                        'channel_id' => 'high_importance_channel',
                     ],
-                    'data' => $dataString,
                 ],
-            ]);
+                'apns' => [
+                    'headers' => [
+                        'apns-priority' => '10',
+                        'apns-expiration' => '0',
+                    ],
+                    'payload' => [
+                        'aps' => [
+                            'alert' => [
+                                'title' => $title,
+                                'body' => $body,
+                            ],
+                            'sound' => 'default',
+                            'content-available' => 1,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $response = Http::withToken($accessToken)
+            ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
 
         return $response->json();
     }

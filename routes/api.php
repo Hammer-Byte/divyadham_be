@@ -98,6 +98,10 @@ Route::middleware("auth:api")->group(function () {
         NotificationController::class,
         "readNotifications",
     ])->name("read-notifications");
+    Route::post("clear-all-notifications", [
+        NotificationController::class,
+        "clearAllNotifications",
+    ])->name("clear-all-notifications");
 
     Route::get("stories", [StoriesController::class, "stories"])->name(
         "stories"
@@ -178,6 +182,10 @@ Route::middleware("auth:api")->group(function () {
         FamilyMemberController::class,
         "acceptRejectFamilyMember",
     ])->name("accept-reject-family-member");
+    Route::post("remove-family-member/", [
+        FamilyMemberController::class,
+        "removeFamilyMember",
+    ])->name("remove-family-member");
 
     Route::get("donations", [DonationsController::class, "donations"])->name(
         "donations"

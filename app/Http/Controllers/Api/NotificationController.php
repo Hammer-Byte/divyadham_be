@@ -55,7 +55,8 @@ class NotificationController extends Controller
 
             $notifications = Notification::where('user_id', $user->id);
 
-            if ($request->type == 2) {
+            // type=2 => only unread
+            if ((int)$request->type === 2) {
                 $notifications = $notifications->where('is_read', 0);
             }
 
@@ -120,7 +121,9 @@ class NotificationController extends Controller
 
             $notificationIds = explode(',', $request->notification_ids);
 
-            $notifications = Notification::whereIn('id', $notificationIds)->update(['is_read' => 1]);
+            Notification::where('user_id', $user->id)
+                ->whereIn('id', $notificationIds)
+                ->update(['is_read' => 1]);
 
             return response()->json([
                 'success' => true,
@@ -128,6 +131,31 @@ class NotificationController extends Controller
                 'data' => (object) [],
                 'error' => (object) [],
                 ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'data' => (object) [],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function clearAllNotifications(Request $request)
+    {
+        try{
+            $user = auth()->user();
+
+            Notification::where('user_id', $user->id)->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'All notifications cleared successfully',
+                'data' => (object) [],
+                'error' => (object) [],
+            ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 

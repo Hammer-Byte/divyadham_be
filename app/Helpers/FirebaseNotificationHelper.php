@@ -59,10 +59,6 @@ class FirebaseNotificationHelper
                 : "FLUTTER_NOTIFICATION_CLICK",
         ];
 
-        Log::info("FCM Request", [
-            "payload" => $payload, // ← log this, check what value is coming in
-        ]);
-
         // Merge any custom keys passed in $data (stringified)
         foreach ($data as $key => $value) {
             $baseData[$key] = (string) $value;
@@ -106,19 +102,16 @@ class FirebaseNotificationHelper
             ],
         ];
 
+        Log::info("FCM Request", [
+            "payload" => $payload, // ← log this, check what value is coming in
+        ]);
+
         $response = Http::withToken($accessToken)->post(
             "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send",
             $payload
         );
 
-        Log::info("CALLED1111");
-
         Log::info("FCM Response", $response->json());
-
-        Log::info("FCM Response", [
-            "status" => $response->status(),
-            "body" => $response->json(),
-        ]);
 
         return $response->json();
     }

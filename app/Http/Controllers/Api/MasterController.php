@@ -14,6 +14,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\State;
+use App\Models\District;
+use App\Models\Villages;
 
 class MasterController extends Controller
 {
@@ -138,7 +141,37 @@ class MasterController extends Controller
                 $updateData['district'] = $request->district;
             }
             if ($request->has('village')) {
-                $updateData['village'] = $request->village;
+                $stateName = $request->filled('state')
+                    ? trim((string) $request->state)
+                    : trim((string) ($user->state ?? ''));
+                $districtName = $request->filled('district')
+                    ? trim((string) $request->district)
+                    : trim((string) ($user->district ?? ''));
+
+                if ($stateName === '' || $districtName === '') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'State or district not found.',
+                        'data' => (object) [],
+                        'error' => 'Invalid state or district.',
+                    ], 422);
+                }
+
+                $village = $this->findOrCreateVillage(
+                    $stateName,
+                    $districtName,
+                    trim((string) $request->village)
+                );
+                if (!$village) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'State or district not found.',
+                        'data' => (object) [],
+                        'error' => 'Invalid state or district.',
+                    ], 422);
+                }
+
+                $updateData['village'] = trim((string) $request->village);
             }
             if ($request->has('country')) {
                 $updateData['country'] = $request->country;
@@ -180,5 +213,35 @@ class MasterController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function findOrCreateVillage(string $stateName, string $districtName, string $villageName): ?Villages
+    {
+        $state = State::where('name', trim($stateName))->first();
+        if (!$state) {
+            return null;
+        }
+        $district = District::where('name', trim($districtName))->where('state_id', $state->id)->first();
+        if (!$district) {
+            return null;
+        }
+        $name = trim($villageName);
+        $existing = Villages::where('name', $name)
+            ->where('state', $state->id)
+            ->where('district', $district->id)
+            ->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        return Villages::create([
+            'name' => $name,
+            'state' => $state->id,
+            'district' => $district->id,
+            'population' => null,
+            'latitude' => null,
+            'longitude' => null,
+            'status' => 1,
+        ]);
     }
 }

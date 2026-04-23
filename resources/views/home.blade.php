@@ -157,7 +157,7 @@
             </p>
 
             <div class="store-buttons">
-                <a href="#" class="store-btn">
+                <a href="https://play.google.com/store/apps/details?id=com.divyadham.mandir" class="store-btn" target="_blank" rel="noopener noreferrer">
                     <span class="icon"><img src="{{ asset('images/googleplay.png') }}" alt="Google Play Store" width="52"
                             height="57"></span>
                     <span class="text">
@@ -166,7 +166,7 @@
                     </span>
                 </a>
 
-                <a href="#" class="store-btn">
+                <a href="https://apps.apple.com/in/app/divyadham-mandir/id6760261451" class="store-btn" target="_blank" rel="noopener noreferrer">
                     <span class="icon"><img src="{{ asset('images/apple.png') }}" alt="Apple App Store" width="52" height="58"></span>
                     <span class="text">
                         Download the app from
